@@ -6,6 +6,7 @@ import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/error.middleware";
+import { connectDb } from "./utils/db.connect";
 
 dotenv.config();
 
@@ -31,6 +32,8 @@ app.use("/api", router);
 
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log("Server running on port: " + port);
-});
+connectDb().then(() =>
+  app.listen(port, () => {
+    console.log("Server running on port: " + port);
+  })
+);
