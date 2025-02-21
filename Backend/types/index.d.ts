@@ -1,13 +1,13 @@
-import * as express from "express-serve-static-core";
+import { ObjectId } from "mongoose";
 
 declare global {
   namespace Express {
     interface Request {
-      customQuery?: string;
       user?: {
-        userId: string;
-        role: string;
+        userId: ObjectId | undefined;
+        role: string | undefined;
       };
+      file: Multer.File;
     }
   }
   interface Error {

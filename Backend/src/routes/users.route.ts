@@ -1,12 +1,22 @@
-import express from 'express'
-import {getAllUsers} from "../handlers/getAllUsers.handler";
+import express from "express";
+import {
+  getAllUsers,
+  loginUser,
+  registerUser,
+  logoutUser,
+  getAuthUser,
+  updateProfile,
+} from "../handlers/auth.handler";
+import { verifyJWT } from "../middleware/auth.middleware";
+import upload from "../utils/multar.config";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/auth/users", getAllUsers)
-router.get("/auth/v1/register", getAllUsers)
-router.get("/auth/v1/login", getAllUsers)
-router.get("/auth/v1/logout", getAllUsers)
-router.get("/auth/v1/authuser", getAllUsers)
+router.get("/users", verifyJWT, getAllUsers);
+router.post("/register", upload.single("image"), registerUser);
+router.post("/login", loginUser);
+router.get("/logout", logoutUser);
+router.get("/authuser", verifyJWT, getAuthUser);
+router.put("/updateProfile", verifyJWT, upload.single("image"), updateProfile);
 
-export default router
+export default router;

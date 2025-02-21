@@ -1,9 +1,10 @@
 // src/utils/jwt.ts
 import jwt from "jsonwebtoken";
 import { RefreshToken } from "../models/refreshToken.model";
+import { ObjectId } from "mongoose";
 
 // Generate access and refresh tokens
-export const generateTokens = (userId: string, role: string) => {
+export const generateTokens = (userId: string |undefined, role: string |undefined) => {
   const accessToken = jwt.sign(
     { userId, role },
     process.env.ACCESS_TOKEN_SECRET!,
@@ -47,7 +48,7 @@ export const storeRefreshToken = async (token: string, userId: string) => {
 };
 
 // Remove refresh token from the database
-export const removeRefreshToken = async (userId: string | undefined) => {
+export const removeRefreshToken = async (userId: ObjectId | undefined) => {
   await RefreshToken.deleteOne({ _id: userId });
 };
 

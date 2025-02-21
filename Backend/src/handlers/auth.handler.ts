@@ -1,7 +1,7 @@
 // src/controllers/auth.controller.ts
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import User, { IUser } from "../models/user.model";
+import User from "../models/user.model";
 import { RefreshToken } from "../models/refreshToken.model";
 import {
   generateTokens,
@@ -9,97 +9,137 @@ import {
   storeRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt";
-import userModel from "../models/user.model";
+import { loginSchema } from "../schemas/user.schema";
+
+const getAllUsers = async (req: Request, res: Response): Promise<any> => {
+  const users = await User.find({ _id: { $ne: req.user?.userId } }).select(
+    "-password"
+  );
+  if (users.length > 0) {
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  }
+  // Always  a response
+  res.status(200).json({
+    success: true,
+    users: [],
+  });
+};
 
 const registerUser = async (req: Request, res: Response) => {
-     const { username, email, password } = req.body;
-    const image = req.file?.path;
+  const { username, email, password } = req.body;
+  const image = req.file?.path;
 
-    if (!image) {
-      return res.status(400).json({ message: "Profile image is required" });
-    }
+  if (!image) {
+    res.status(400).json({ message: "Profile image is required" });
+  }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const user = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-      image,
-    });
+  const hashedPassword = await bcrypt.hash(password, 12);
+  const user = await User.create({
+    username,
+    email,
+    password: hashedPassword,
+    image,
+  });
 
-    const { accessToken, refreshToken } = generateTokens(user._id, user.role);
-    await RefreshToken.create({ token: refreshToken, userId: user._id });
+  const { accessToken, refreshToken } = generateTokens(
+    user._id as string,
+    user.role
+  );
+  await RefreshToken.create({ token: refreshToken, userId: user._id });
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
-    });
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
-    res.status(201).json({ user: { ...user.toObject(), password: undefined } });
+  res.status(200).json({
+    message: "User Registered successfully",
+    user: {
+      username: user.username,
+      email: user.email,
+      image: user.image,
+      role: user.role,
+    },
+  });
 };
 
 const loginUser = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+  //? sanitize the request body
 
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Generate tokens
-    const { accessToken, refreshToken } = generateTokens(user._id, user.role);
-
-    // Store refresh token in the database
-    await storeRefreshToken(refreshToken, user._id);
-
-    // Set cookies
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+  const validate = loginSchema.safeParse(email, password);
+  if (!validate.success) {
+    res.status(400).json({
+      message: "Validation error",
+      errors: validate.error.flatten,
     });
+  }
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+  // Find user by email
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+  }
 
-    // Return user data (excluding password)
-    res.status(200).json({
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        image: user.image,
-        role: user.role,
-      },
-    });
-  
+  // Compare passwords
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  // Generate tokens
+  const { accessToken, refreshToken } = generateTokens(
+    user?._id as string,
+    user?.role
+  );
+
+  // Store refresh token in the database
+  await storeRefreshToken(refreshToken, user?._id as string);
+
+  // Set cookies
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  // Send user data (excluding password)
+  res.status(200).json({
+    user: {
+      _id: user?._id,
+      username: user?.username,
+      email: user?.email,
+      image: user?.image,
+      role: user?.role,
+    },
+  });
 };
 
 const refreshToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies?.refreshToken;
   if (!refreshToken) {
-    return res.status(404).json({
+    res.status(404).json({
       message: "No refresh token Found! Try to Login again!",
     });
   }
@@ -107,19 +147,22 @@ const refreshToken = async (req: Request, res: Response) => {
   const decodedData = verifyRefreshToken(refreshToken);
 
   if (!decodedData) {
-    return res.status(400).json({
+    res.status(400).json({
       message: "failed to decode the refresh token!",
     });
   }
 
   // TRY TO FIND USER IF THERE IS A DECODED DATA
-  const userData = userModel.find({ _id: decodedData.userId });
+  const userData = await User.findById(decodedData?.userId);
   if (!userData) {
-    return res.status(404).json({
+    res.status(404).json({
       message: "No user found!",
     });
   }
-  const { accessToken } = generateTokens(userData._id, userData.role);
+  const { accessToken } = generateTokens(
+    userData?._id as string,
+    userData?.role
+  );
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
@@ -133,8 +176,43 @@ const refreshToken = async (req: Request, res: Response) => {
 const logoutUser = async (req: Request, res: Response) => {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
-  await removeRefreshToken(req?.user?.userId);
+  const user = req.user;
+  await removeRefreshToken(user?.userId);
   res.status(200).json({ message: "Logged out successfully" });
 };
 
-export { registerUser, loginUser, refreshToken, logoutUser };
+const getAuthUser = async (req: Request, res: Response) => {
+  const user = req.user;
+  const currentUser = await User.findById(user?.userId).select(
+    "username email role,"
+  );
+  res.status(200).json(currentUser);
+};
+
+const updateProfile = async (req: Request, res: Response) => {
+  const { username, profileImage } = req.body;
+  const user = req.user;
+  const updatedUserDetails = User.findOneAndUpdate(
+    { _id: user?.userId },
+    { username: username, image: profileImage },
+    { new: true }
+  );
+
+  if (updatedUserDetails) {
+    res
+      .status(200)
+      .json({ message: "user details updated", user: updatedUserDetails });
+  } else {
+    res.status(400).json({ message: "failed to update user details" });
+  }
+};
+
+export {
+  getAllUsers,
+  registerUser,
+  loginUser,
+  refreshToken,
+  getAuthUser,
+  logoutUser,
+  updateProfile,
+};
