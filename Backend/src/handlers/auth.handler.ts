@@ -22,17 +22,18 @@ const getAllUsers = async (req: Request, res: Response): Promise<any> => {
     });
   }
   // Always  a response
-  res.status(200).json({
-    success: true,
-    users: [],
-  });
+  else {
+    res.status(200).json({
+      success: true,
+      users: [],
+    });
+  }
 };
 
 const registerUser = async (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
-  const image = req.file?.path;
+  const { username, email, password, profileImage } = req.body;
 
-  if (!image) {
+  if (!profileImage) {
     res.status(400).json({ message: "Profile image is required" });
   }
 
@@ -41,7 +42,7 @@ const registerUser = async (req: Request, res: Response) => {
     username,
     email,
     password: hashedPassword,
-    image,
+    image: profileImage,
   });
 
   const { accessToken, refreshToken } = generateTokens(
