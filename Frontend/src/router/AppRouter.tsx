@@ -3,6 +3,9 @@ import Navbar from "../components/Navbar";
 import Home from "../pages/Home";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
+import Setting from "../pages/Setting";
+import Profile from "../pages/Profile";
+import NotFound from "../pages/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -13,15 +16,27 @@ export const router = createBrowserRouter([
         index: true,
         element: <Home />,
       },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/register",
-        element: <Register />,
-      },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/setting",
+    element: <Setting />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

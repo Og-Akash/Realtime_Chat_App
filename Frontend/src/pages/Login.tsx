@@ -3,9 +3,9 @@ const Login = () => {
     <div>
       Login
       <br />
-      <button className='btn btn-accent'>Login into your Account</button>
+      <button className="btn btn-accent">Login into your Account</button>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

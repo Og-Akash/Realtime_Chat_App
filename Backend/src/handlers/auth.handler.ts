@@ -1,8 +1,8 @@
 // src/controllers/auth.controller.ts
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import User from "../models/user.model";
-import { RefreshToken } from "../models/refreshToken.model";
+import User from "@/models/user.model";
+import { RefreshToken } from "@/models/refreshToken.model";
 import {
   generateTokens,
   removeRefreshToken,
