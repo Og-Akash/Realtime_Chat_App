@@ -24,7 +24,6 @@ app.use(cors({
 }));
 
 app.get("/", async (req: Request, res: Response) => {
-  throw new Error("oopss")
   res.send("Hello, World!");
 
 });

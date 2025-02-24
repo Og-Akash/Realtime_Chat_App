@@ -1,6 +1,6 @@
 import mongoose, { model, Schema } from "mongoose";
 
-interface IMessage extends Document {
+interface IMessage extends mongoose.Document {
   senderId: mongoose.Types.ObjectId;
   receiverId: mongoose.Types.ObjectId;
   text: string;
