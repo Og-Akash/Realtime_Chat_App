@@ -2,7 +2,13 @@ import { CONFLICT, UNAUTHORIZED } from "../constants/http";
 import Session from "../models/session.model";
 import userModel from "../models/user.model";
 import appAssert from "../utils/appAssert";
-import { generateToken } from "../utils/jwt";
+import { oneDayInMS, sevenDaysFromNow } from "../utils/date";
+import {
+  RefreshTokenPayload,
+  refreshTokenSignOptions,
+  signToken,
+  verifyToken,
+} from "../utils/jwt";
 
 export interface createAccountParams {
   username: string;
@@ -33,16 +39,23 @@ export const createAccount = async (data: createAccountParams) => {
     password: data.password,
     image: data.image,
   });
+
   //? create a session
   const session = await Session.create({
     userId: user._id,
     userAgent: data.userAgent,
   });
+
   //? sign the acces and refresh token
-  const { accessToken, refreshToken } = generateToken(
-    session._id as string,
-    user._id as string
-  );
+  const sessionInfo = {
+    sessionId: session._id,
+  };
+
+  //* Access token Generate
+  const accessToken = signToken({ userId: user._id, ...sessionInfo });
+  //* Refresh token Generate
+  const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
+
   //? return the user and tokens
   return {
     user: user.omitPassword(),
@@ -72,15 +85,62 @@ export const loginUser = async (data: loginParams) => {
     userId,
     userAgent: data.userAgent,
   });
-  //* geneate tokens
-  const { accessToken, refreshToken } = generateToken(
-    session._id as string,
-    user._id as string
-  );
+
+  //? sign the acces and refresh token
+  const sessionInfo = {
+    sessionId: session._id,
+  };
+
+  //* Access token Generate
+  const accessToken = signToken({ userId: user._id, ...sessionInfo });
+  //* Refresh token Generate
+  const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
+
   //* return user & tokens
   return {
     user: user.omitPassword(),
     accessToken,
     refreshToken,
+  };
+};
+
+export const refreshUserAccessToken = async (refreshToken: string) => {
+  const { payload } = verifyToken<RefreshTokenPayload>(refreshToken, {
+    secret: refreshTokenSignOptions.secret,
+  });
+  appAssert(payload, UNAUTHORIZED, "Invalid refresh token");
+  const session = await Session.findById(payload.sessionId);
+  appAssert(
+    session && session.expiresAt.getTime() > Date.now(),
+    UNAUTHORIZED,
+    "session is not exists or expires."
+  );
+
+  //? refresh the session if it's expires within 24 hours
+
+  const sessionNeedsRefresh =
+    session.expiresAt.getTime() - Date.now() <= oneDayInMS;
+  if (sessionNeedsRefresh) {
+    session.expiresAt = sevenDaysFromNow();
+    await session.save();
+  }
+
+  const newRefreshToken = sessionNeedsRefresh
+    ? signToken(
+        {
+          sessionId: session._id,
+        },
+        refreshTokenSignOptions
+      )
+    : undefined;
+
+  const accessToken = signToken({
+    sessionId: session._id,
+    userId: session.userId,
+  });
+
+  return {
+    accessToken,
+    newRefreshToken,
   };
 };

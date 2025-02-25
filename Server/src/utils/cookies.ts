@@ -1,6 +1,8 @@
 import { CookieOptions, Response } from "express";
 import { NODE_ENV } from "../constants/env";
 
+export const refreshTokenPath = "/api/auth/v1/refresh"
+
 interface CookieParams {
   res: Response;
   accessToken: string;
@@ -13,11 +15,11 @@ const defaultOptions: CookieOptions = {
   secure: NODE_ENV === "production",
 };
 
-const getAccessTokenOption = (): CookieOptions => ({
+export const getAccessTokenOption = (): CookieOptions => ({
   ...defaultOptions,
   expires: new Date(24 * 60 * 60 * 1000),
 });
-const getRefreshTokenOption = (): CookieOptions => ({
+export const getRefreshTokenOption = (): CookieOptions => ({
   ...defaultOptions,
   expires: new Date(7 * 24 * 60 * 60 * 1000),
   path: "/api/auth/v1/refresh",
@@ -31,3 +33,11 @@ export const setAuthCookies = ({
   res
     .cookie("accessToken", accessToken, getAccessTokenOption())
     .cookie("refreshToken", refreshToken, getRefreshTokenOption());
+
+export const clearAuthCookies = (res:Response) => {
+  return res
+  .clearCookie("accessToken")
+  .clearCookie("refreshToken", {
+    path: refreshTokenPath
+  })
+}

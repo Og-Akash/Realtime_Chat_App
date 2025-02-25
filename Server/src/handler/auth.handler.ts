@@ -1,11 +1,19 @@
-import { BAD_REQUEST, CREATED, OK } from "../constants/http";
+import { BAD_REQUEST, CREATED, OK, UNAUTHORIZED } from "../constants/http";
 import userModel from "../models/user.model";
 import { asyncHandler } from "../utils/asyncHandler";
 import { z } from "zod";
-import { createAccount, loginUser } from "../services/auth.services";
+import {
+  createAccount,
+  loginUser,
+  refreshUserAccessToken,
+} from "../services/auth.services";
 import { LoginSchema, RegisterSchema } from "../schemas/auth.schema";
+import { verifyToken } from "../utils/jwt";
+import Session from "../models/session.model";
+import { clearAuthCookies, getAccessTokenOption, getRefreshTokenOption } from "../utils/cookies";
+import appAssert from "../utils/appAssert";
 
-const getAllUser = asyncHandler(async (req, res, next) => {
+const getAllUser = asyncHandler(async (req, res) => {
   //* Fetch all users from the database
   const allUsers = await userModel.find();
   if (allUsers.length > 0) {
@@ -14,7 +22,7 @@ const getAllUser = asyncHandler(async (req, res, next) => {
   return res.status(404).json({ message: "No users found" });
 });
 
-const register = asyncHandler(async (req, res, next) => {
+const register = asyncHandler(async (req, res) => {
   const parsedData = RegisterSchema.safeParse({
     ...req.body,
     userAgent: req.headers["user-agent"],
@@ -46,7 +54,7 @@ const register = asyncHandler(async (req, res, next) => {
   res.status(CREATED).json({ message: "User Registration Success", user });
 });
 
-const login = asyncHandler(async (req, res, next) => {
+const login = asyncHandler(async (req, res) => {
   const parsedData = LoginSchema.safeParse({
     ...req.body,
     userAgent: req.headers["user-agent"],
@@ -75,8 +83,38 @@ const login = asyncHandler(async (req, res, next) => {
   res.status(OK).json({ message: "User Login Success", user });
 });
 
-const logout = asyncHandler(async (req, res, next) => {});
+const logout = asyncHandler(async (req, res) => {
+  const accessToken = req.cookies?.accessToken;
+  const { payload, error } = verifyToken(accessToken);
+
+  if (payload) {
+    await Session.findByIdAndDelete(payload.sessionId);
+  }
+  clearAuthCookies(res).status(OK).json({
+    message: "User Logout Success",
+  });
+});
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const refreshToken = req.cookies?.refreshToken;
+  appAssert(refreshToken, UNAUTHORIZED, "No refresh token found!");
+
+  const { accessToken, newRefreshToken } = await refreshUserAccessToken(
+    refreshToken
+  );
+
+  if(newRefreshToken){
+    res.cookie("refreshToken", newRefreshToken, getRefreshTokenOption());
+  }
+
+  return res
+    .status(OK)
+    .cookie("accessToken", accessToken, getAccessTokenOption())
+    .json({
+      message: "Access token Refreshed",
+    });
+});
 
 const authAuth = asyncHandler(async (req, res, next) => {});
 
-export { getAllUser, register, login, logout, authAuth };
+export { getAllUser, register, login, logout, authAuth, refreshAccessToken };
