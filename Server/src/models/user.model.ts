@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password: string;
   image: string;
   role: "user" | "admin";
+  isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(val: string): Promise<boolean>;
@@ -23,6 +24,10 @@ const userSchema = new Schema<IUser>(
     password: { type: String, required: true },
     image: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -36,7 +41,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = function (val: string) {
-  const hashedPassword = this.password
+  const hashedPassword = this.password;
   return compareHash(val, hashedPassword);
 };
 userSchema.methods.omitPassword = function () {

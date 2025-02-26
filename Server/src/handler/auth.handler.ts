@@ -1,4 +1,4 @@
-import { BAD_REQUEST, CREATED, OK, UNAUTHORIZED } from "../constants/http";
+import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
 import userModel from "../models/user.model";
 import { asyncHandler } from "../utils/asyncHandler";
 import { z } from "zod";
@@ -6,11 +6,23 @@ import {
   createAccount,
   loginUser,
   refreshUserAccessToken,
+  resetPassword,
+  sendPasswordResetEmail,
+  verifyEmailByCode,
 } from "../services/auth.services";
-import { LoginSchema, RegisterSchema } from "../schemas/auth.schema";
+import {
+  emailSchema,
+  LoginSchema,
+  RegisterSchema,
+  resetPasswordSchema,
+} from "../schemas/auth.schema";
 import { verifyToken } from "../utils/jwt";
 import Session from "../models/session.model";
-import { clearAuthCookies, getAccessTokenOption, getRefreshTokenOption } from "../utils/cookies";
+import {
+  clearAuthCookies,
+  getAccessTokenOption,
+  getRefreshTokenOption,
+} from "../utils/cookies";
 import appAssert from "../utils/appAssert";
 
 const getAllUser = asyncHandler(async (req, res) => {
@@ -23,17 +35,14 @@ const getAllUser = asyncHandler(async (req, res) => {
 });
 
 const register = asyncHandler(async (req, res) => {
-  const parsedData = RegisterSchema.safeParse({
+  const parsedData = RegisterSchema.parse({
     ...req.body,
     userAgent: req.headers["user-agent"],
   });
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
 
   //? call the auth service
   const { user, accessToken, refreshToken } = await createAccount(
-    parsedData.data
+    parsedData
   );
 
   res.cookie("accessToken", accessToken, {
@@ -55,15 +64,15 @@ const register = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const parsedData = LoginSchema.safeParse({
+  const parsedData = LoginSchema.parse({
     ...req.body,
-    userAgent: req.headers["user-agent"],
+    userAgent: req.headers["user-agent"]
   });
 
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-  const { user, accessToken, refreshToken } = await loginUser(parsedData.data);
+  console.log("parsedData", parsedData);
+  
+
+  const { user, accessToken, refreshToken } = await loginUser(parsedData);
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
@@ -103,7 +112,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     refreshToken
   );
 
-  if(newRefreshToken){
+  if (newRefreshToken) {
     res.cookie("refreshToken", newRefreshToken, getRefreshTokenOption());
   }
 
@@ -115,6 +124,46 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     });
 });
 
-const authAuth = asyncHandler(async (req, res, next) => {});
 
-export { getAllUser, register, login, logout, authAuth, refreshAccessToken };
+const verifyEmail = asyncHandler(async (req, res, next) => {
+  const verificationCode = req.params.code;
+
+  const codeSchema = z.string().min(1).max(24);
+  const parsedCode = codeSchema.parse(verificationCode);
+
+  await verifyEmailByCode(parsedCode);
+
+  res.status(OK).json({ message: "Email verification successful" });
+});
+
+const forgetUserPassword = asyncHandler(async (req, res, next) => {
+  //* get the user email in params
+  //* send the password changing email
+  const parsedData = await emailSchema.parse(req.body.email);
+  await sendPasswordResetEmail(parsedData);
+  //* return the response
+  res.status(OK).json({ message: "password reset email send." });
+});
+
+const resetUserPassword = asyncHandler(async (req, res, next) => {
+  //* get the verification code and the new password
+  const parsedData = resetPasswordSchema.parse(req.body);
+
+  await resetPassword(parsedData);
+  //* clear all the user cookies
+  clearAuthCookies(res).status(OK).json({
+    message: "password reset successful",
+  });
+  //* send the response
+});
+
+export {
+  getAllUser,
+  register,
+  login,
+  logout,
+  refreshAccessToken,
+  verifyEmail,
+  forgetUserPassword,
+  resetUserPassword,
+};

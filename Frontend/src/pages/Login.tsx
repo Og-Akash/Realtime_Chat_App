@@ -5,12 +5,13 @@ import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 
 export interface LoginFormData {
+  username: string;
   email: string;
   password: string;
 }
 
 const Login = () => {
-  const { authUser } = useAuthStore();
+  const { authUser, login, isLoggingIn } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
   // If user is authenticated, redirect to home
@@ -24,8 +25,8 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginFormData>();
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log("Login data:", data);
+  const onSubmit = async (data: LoginFormData) => {
+    await login(data);
   };
 
   return (
@@ -72,6 +73,33 @@ const Login = () => {
           {/* Credentials login */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex flex-col gap-2 w-96 space-y-4">
+              {/* Username */}
+              <div className="form-control">
+                <label htmlFor="email" className="fieldset-label font-medium">
+                  Username
+                </label>
+                {/* Input Container */}
+                <div className="relative">
+                  <div className="absolute inset-y-0 pl-3 flex items-center pointer-events-none z-10">
+                    <Mail size={16} className="text-base-content/40" />
+                  </div>
+                  <input
+                    id="username"
+                    type="text"
+                    placeholder="John doe"
+                    className="input input-success w-full pl-10"
+                    {...register("username", {
+                      required: "username is required",          
+                    })}
+                  />
+                </div>
+                {/* Error message placed outside the relative container */}
+                {errors.username && (
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.username.message}
+                  </span>
+                )}
+              </div>
               {/* Email */}
               <div className="form-control">
                 <label htmlFor="email" className="fieldset-label font-medium">
@@ -141,19 +169,20 @@ const Login = () => {
                     )}
                   </button>
                 </div>
-                  {errors.password && (
-                    <span className="text-red-500 text-sm">
-                      {errors.password.message}
-                    </span>
-                  )}
+                {errors.password && (
+                  <span className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </span>
+                )}
               </div>
 
               <div>
                 <button
+                  disabled={isLoggingIn}
                   type="submit"
                   className="btn btn-accent w-full text-base-100"
                 >
-                  Login Account
+                  {isLoggingIn ? "Login...." : "Login Account"}
                 </button>
               </div>
             </div>
