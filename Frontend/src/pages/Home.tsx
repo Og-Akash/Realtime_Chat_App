@@ -7,7 +7,7 @@ const Home = () => {
   useEffect(() => {
     checkAuth();
   }, []);
-  console.log(authUser);
+  console.log("current auth user",authUser);
 
   if (isCheckingAuth && !authUser) {
     return <Loader />;
@@ -15,8 +15,7 @@ const Home = () => {
 
   return (
     <div>
-      home
-      <h1>{authUser?.username}</h1>
+      <h1 className="text-white">{authUser?.email}</h1>
     </div>
   );
 };

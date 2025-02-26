@@ -22,7 +22,7 @@ const ProtectedRoute = ({
 }) => {
   const { authUser } = useAuthStore();
   const locaton = useLocation();
-  
+
   if (!authUser) {
     return <Navigate to={redirectPath} state={{ from: locaton }} replace />;
   }
@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/setting",
+        index: true,
         element: <Home />,
       },
       {
@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        index: true,
+        path: "/setting",
         element: <Setting />,
       },
     ],

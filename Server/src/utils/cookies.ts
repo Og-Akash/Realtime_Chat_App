@@ -10,7 +10,7 @@ interface CookieParams {
 }
 
 const defaultOptions: CookieOptions = {
-  sameSite: "strict",
+  sameSite: NODE_ENV === "developmen" ? "strict" : "none",
   httpOnly: true,
   secure: NODE_ENV === "production",
 };

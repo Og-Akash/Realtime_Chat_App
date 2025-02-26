@@ -1,8 +1,10 @@
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Eye, EyeClosed, Lock, Mail, MessageCircleCode } from "lucide-react";
+import { Eye, EyeClosed, LoaderCircle, Lock, Mail, MessageCircleCode } from "lucide-react";
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export interface LoginFormData {
   username: string;
@@ -11,8 +13,9 @@ export interface LoginFormData {
 }
 
 const Login = () => {
-  const { authUser, login, isLoggingIn } = useAuthStore();
+  const { authUser, login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   // If user is authenticated, redirect to home
   if (authUser) {
@@ -25,9 +28,24 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginFormData>();
 
+  const { isPending,  mutate, error } = useMutation({
+    mutationFn: login,
+    onSuccess: () => {
+      toast.success("User Logged In");
+      navigate("/",{
+        replace: true,
+      });
+    },
+    onError: () => {
+      toast.error("Failed to login");
+    },
+  });
+
   const onSubmit = async (data: LoginFormData) => {
-    await login(data);
+    mutate(data);
   };
+
+  console.log("error", error);
 
   return (
     <div className="min-h-screen min-w-screen grid lg:grid-cols-2">
@@ -89,7 +107,7 @@ const Login = () => {
                     placeholder="John doe"
                     className="input input-success w-full pl-10"
                     {...register("username", {
-                      required: "username is required",          
+                      required: "username is required",
                     })}
                   />
                 </div>
@@ -176,13 +194,20 @@ const Login = () => {
                 )}
               </div>
 
+              <Link
+                to="/password/forgot"
+                className="leading-0 block text-right cursor-pointer hover:text-gray-300 transition-all"
+              >
+                Forget Password?
+              </Link>
+
               <div>
                 <button
-                  disabled={isLoggingIn}
+                  disabled={isPending}
                   type="submit"
                   className="btn btn-accent w-full text-base-100"
                 >
-                  {isLoggingIn ? "Login...." : "Login Account"}
+                  {isPending ? <LoaderCircle className="animate-spin" size={16}/> : "Login Account"}
                 </button>
               </div>
             </div>
