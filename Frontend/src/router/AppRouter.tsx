@@ -2,68 +2,63 @@ import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
-  useLocation,
 } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import Home from "@/pages/Home";
 import Register from "@/pages/Register";
 import Login from "@/pages/Login";
 import Setting from "@/pages/Setting";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
+import Layout from "@/components/Layout";
+import Loader from "@/components/ui/Loader";
 import { useAuthStore } from "@/store/useAuthStore";
+import Guard from "@/lib/Gurad";
 
-const ProtectedRoute = ({
-  children,
-  redirectPath = "/login",
-}: {
-  children: React.ReactNode;
-  redirectPath?: string;
-}) => {
-  const { authUser } = useAuthStore();
-  const locaton = useLocation();
+// const ProtectedRoute = ({
+//   children,
+//   redirectPath = "/",
+// }: {
+//   children: React.ReactNode;
+//   redirectPath?: string;
+// }) => {
+//   const { authUser, isCheckingAuth } = useAuthStore();
 
-  if (!authUser) {
-    return <Navigate to={redirectPath} state={{ from: locaton }} replace />;
-  }
-  return children;
-};
+//   if (isCheckingAuth && !authUser) {
+//     return <Loader />;
+//   }
+//   if (authUser) {
+//     return <Navigate to={redirectPath} replace />;
+//   }
+//   return children;
+// };
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoute>
-        <Navbar />
-      </ProtectedRoute>
-    ),
+    element: <Layout />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
-        path: "/setting",
-        element: <Setting />,
-      },
+      { index: true, element: <Home /> },
+      { path: "/profile", element: <Profile /> },
+      { path: "/setting", element: <Setting /> },
     ],
   },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <Guard>
+        <Login />
+      </Guard>
+    ),
   },
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <Guard>
+        <Register />
+      </Guard>
+    ),
   },
-  {
-    path: "*",
-    element: <NotFound />,
-  },
+  { path: "*", element: <NotFound /> },
 ]);
 
 export const AppRouter = () => {

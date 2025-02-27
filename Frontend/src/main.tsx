@@ -6,7 +6,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import App from "./App.tsx";
 import { queryCLient } from "./config/queryClient.ts";
 
-createRoot(document.getElementById("root")!).render(
+
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryCLient}>
       <ReactQueryDevtools initialIsOpen={false} />
@@ -14,3 +15,4 @@ createRoot(document.getElementById("root")!).render(
     </QueryClientProvider>
   </StrictMode>
 );
+

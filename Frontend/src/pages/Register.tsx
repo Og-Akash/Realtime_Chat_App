@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   Eye,
@@ -20,10 +20,17 @@ export interface RegisterFormData {
 }
 
 const Register = () => {
-  const { authUser, signUp, uploadImage } = useAuthStore();
+  const { authUser, signUp, uploadImage,checkAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const navigate = useNavigate()
+
+    useEffect(() => {
+      checkAuth();
+    }, []);
+  
 
   const {
     register,
@@ -52,6 +59,7 @@ const Register = () => {
     mutate(imageFile, {
       onSuccess: (imageUrl) => {
         signUp({ ...data, image: imageUrl || "" });
+        navigate("/")
       },
     });
   };

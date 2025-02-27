@@ -1,7 +1,14 @@
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Eye, EyeClosed, LoaderCircle, Lock, Mail, MessageCircleCode } from "lucide-react";
-import { useState } from "react";
+import {
+  Eye,
+  EyeClosed,
+  LoaderCircle,
+  Lock,
+  Mail,
+  MessageCircleCode,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -13,13 +20,16 @@ export interface LoginFormData {
 }
 
 const Login = () => {
-  const { authUser, login } = useAuthStore();
+  const { authUser, login, checkAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  // If user is authenticated, redirect to home
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   if (authUser) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   const {
@@ -28,24 +38,22 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginFormData>();
 
-  const { isPending,  mutate, error } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: login,
     onSuccess: () => {
       toast.success("User Logged In");
-      navigate("/",{
+      navigate("/", {
         replace: true,
       });
     },
-    onError: () => {
-      toast.error("Failed to login");
+    onError: (error) => {
+      toast.error(`${error.message ?? "Failed to login"}`);
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
     mutate(data);
   };
-
-  console.log("error", error);
 
   return (
     <div className="min-h-screen min-w-screen grid lg:grid-cols-2">
@@ -207,7 +215,11 @@ const Login = () => {
                   type="submit"
                   className="btn btn-accent w-full text-base-100"
                 >
-                  {isPending ? <LoaderCircle className="animate-spin" size={16}/> : "Login Account"}
+                  {isPending ? (
+                    <LoaderCircle className="animate-spin" size={16} />
+                  ) : (
+                    "Login Account"
+                  )}
                 </button>
               </div>
             </div>

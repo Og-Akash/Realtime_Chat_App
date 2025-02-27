@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <AppRouter />
-      <Toaster position="top-right"/>
+      <Toaster position="top-right" />
     </>
   );
 }

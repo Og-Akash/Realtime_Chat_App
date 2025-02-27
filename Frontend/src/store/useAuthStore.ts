@@ -3,6 +3,7 @@ import { axiosIntance } from "@/api/axiosIntance";
 import { User } from "../../types/userType";
 import { RegisterFormData } from "@/pages/Register";
 import { LoginFormData } from "@/pages/Login";
+import { AuthUserParams } from "@/types/user";
 
 interface AuthState {
   authUser: User | null;
@@ -12,6 +13,7 @@ interface AuthState {
   checkAuth: () => Promise<void>;
   signUp: (data: RegisterFormData) => Promise<void>;
   login: (data: LoginFormData) => Promise<void>;
+  logout: () => Promise<void>;
   uploadImage: (image: FormData) => Promise<any>;
 }
 
@@ -19,12 +21,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   authUser: null, //{username: "akash", _id: "sdfsdf", email: "akash@gmail.com", image: "shdfhsdhf"},
   isSigningIn: false,
   isLoggingIn: false,
-  isCheckingAuth: true,
+  isCheckingAuth: false,
 
   checkAuth: async () => {
     try {
+      set({ isCheckingAuth: true });
       const result = await axiosIntance.get("/user/v1/getAuthUser");
-      set({ authUser: result.data });
+      set({ authUser: result.user });
     } catch (error) {
       set({ authUser: null });
       console.log(error);
@@ -39,4 +42,5 @@ export const useAuthStore = create<AuthState>((set) => ({
     }),
   signUp: async (data: any) => axiosIntance.post("/auth/v1/register", data),
   login: async (data: any) => axiosIntance.post("/auth/v1/login", data),
+  logout: async () => axiosIntance.get("/auth/v1/logout"),
 }));
