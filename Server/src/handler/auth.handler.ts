@@ -25,14 +25,6 @@ import {
 } from "../utils/cookies";
 import appAssert from "../utils/appAssert";
 
-const getAllUser = asyncHandler(async (req, res) => {
-  //* Fetch all users from the database
-  const allUsers = await userModel.find();
-  if (allUsers.length > 0) {
-    return res.status(200).json(allUsers);
-  }
-  return res.status(404).json({ message: "No users found" });
-});
 
 const register = asyncHandler(async (req, res) => {
   const parsedData = RegisterSchema.parse({
@@ -158,7 +150,6 @@ const resetUserPassword = asyncHandler(async (req, res, next) => {
 });
 
 export {
-  getAllUser,
   register,
   login,
   logout,
