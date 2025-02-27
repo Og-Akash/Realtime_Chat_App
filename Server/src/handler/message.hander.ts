@@ -4,7 +4,6 @@ import Message from "../models/message.model";
 import userModel from "../models/user.model";
 import appAssert from "../utils/appAssert";
 import { asyncHandler } from "../utils/asyncHandler";
-import { uploadImageToCloudinary } from "../utils/uploadImageToCloudinary";
 
 const getUsers = asyncHandler(async (req, res) => {
   //* Fetch all users from the database
@@ -68,7 +67,7 @@ const sendMessageToUser = asyncHandler(async (req, res) => {
   appAssert(storeMessage,INTERNAL_SERVER_ERROR, "failed to store message")
 
   //*Todo --> realtime message sending using socket io
-  
+
   //* return the response
   res.status(CREATED).json(storeMessage)
   //* send the message to the other user

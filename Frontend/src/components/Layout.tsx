@@ -6,14 +6,14 @@ import Loader from "./ui/Loader";
 
 const Layout = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  
+  if (isCheckingAuth && !authUser) {
+    return <Loader />;
+  }
   useEffect(() => {
     checkAuth();
   }, []);
   console.log("current auth user", authUser);
-
-  if (isCheckingAuth && !authUser) {
-    return <Loader />;
-  }
 
   if (!authUser) {
     return (

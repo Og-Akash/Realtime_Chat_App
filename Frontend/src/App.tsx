@@ -1,10 +1,10 @@
 import { Toaster } from "react-hot-toast";
-import { AppRouter } from "./router/AppRouter";
+import { Approuter, } from "./router/AppRouter";
 
 function App() {
   return (
     <>
-      <AppRouter />
+      <Approuter />
       <Toaster position="top-right" />
     </>
   );

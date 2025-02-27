@@ -3,7 +3,7 @@ import { axiosIntance } from "@/api/axiosIntance";
 import { User } from "../../types/userType";
 import { RegisterFormData } from "@/pages/Register";
 import { LoginFormData } from "@/pages/Login";
-import { AuthUserParams } from "@/types/user";
+
 
 interface AuthState {
   authUser: User | null;
