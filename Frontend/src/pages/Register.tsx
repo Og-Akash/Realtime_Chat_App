@@ -42,7 +42,7 @@ const Register = () => {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("image", file);
-      console.log("image", formData);
+      // console.log("image", formData);
 
       return await uploadImage(formData);
     },

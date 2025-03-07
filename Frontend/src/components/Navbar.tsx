@@ -1,18 +1,19 @@
 import { useAuthStore } from "@/store/useAuthStore";
-import { AuthUserParams } from "@/types/user";
 import { useMutation } from "@tanstack/react-query";
 import {
   LogOut,
-  LogOutIcon,
   MessageCircleMoreIcon,
   Settings,
-  User,
+  User2,
   UserRound,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import { User } from "../../types/userType";
 
-const Navbar = ({ authUser }: AuthUserParams) => {
+type NavParams = { authUser: User };
+
+const Navbar = ({ authUser }: NavParams) => {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
 
@@ -40,7 +41,7 @@ const Navbar = ({ authUser }: AuthUserParams) => {
         </div>
         <div className="flex items-center gap-8">
           <div className="inline-flex items-center gap-2">
-            <User size={22} />
+            <User2 size={22} />
             <span>{authUser?.username}</span>
           </div>
           <div className="dropdown dropdown-end">
@@ -65,21 +66,22 @@ const Navbar = ({ authUser }: AuthUserParams) => {
                 to="/profile"
                 className="hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
               >
-                <UserRound size={14} className="text-accent"/>
+                <UserRound size={14} className="text-accent" />
                 Profile
               </Link>
               <Link
                 to="/setting"
                 className="hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
               >
-                <Settings size={14} className="text-accent"/>
+                <Settings size={14} className="text-accent" />
                 Setting
               </Link>
-              <Link to="#"
+              <Link
+                to="#"
                 onClick={() => mutate()}
                 className="hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
               >
-                <LogOut size={14} className="text-accent"/>
+                <LogOut size={14} className="text-accent" />
                 Logout
               </Link>
             </ul>

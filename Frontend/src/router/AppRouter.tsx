@@ -1,8 +1,6 @@
 import {
-  createBrowserRouter,
   Navigate,
   Route,
-  RouterProvider,
   Routes,
 } from "react-router-dom";
 import Home from "@/pages/Home";

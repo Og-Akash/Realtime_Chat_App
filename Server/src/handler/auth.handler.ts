@@ -1,4 +1,4 @@
-import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
+import { BAD_REQUEST, CREATED, OK, UNAUTHORIZED } from "../constants/http";
 import userModel from "../models/user.model";
 import { asyncHandler } from "../utils/asyncHandler";
 import { z } from "zod";
@@ -24,7 +24,7 @@ import {
   getRefreshTokenOption,
 } from "../utils/cookies";
 import appAssert from "../utils/appAssert";
-
+import cloudinary from "../config/cloudinary";
 
 const register = asyncHandler(async (req, res) => {
   const parsedData = RegisterSchema.parse({
@@ -33,9 +33,7 @@ const register = asyncHandler(async (req, res) => {
   });
 
   //? call the auth service
-  const { user, accessToken, refreshToken } = await createAccount(
-    parsedData
-  );
+  const { user, accessToken, refreshToken } = await createAccount(parsedData);
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
@@ -58,11 +56,10 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const parsedData = LoginSchema.parse({
     ...req.body,
-    userAgent: req.headers["user-agent"]
+    userAgent: req.headers["user-agent"],
   });
 
-  console.log("parsedData", parsedData);
-  
+  // console.log("parsedData", parsedData);
 
   const { user, accessToken, refreshToken } = await loginUser(parsedData);
 
@@ -116,7 +113,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     });
 });
 
-
 const verifyEmail = asyncHandler(async (req, res, next) => {
   const verificationCode = req.params.code;
 
@@ -149,6 +145,38 @@ const resetUserPassword = asyncHandler(async (req, res, next) => {
   //* send the response
 });
 
+const updateUserDetails = asyncHandler(async (req, res, next) => {
+  //* get the user details from the request
+  const file = req.file;
+  console.log(file);
+
+  appAssert(file, BAD_REQUEST, "profile image is invalid");
+
+  //* if there is an image then upload it first then grab the url
+  const imageBase64 = `data:${file.mimetype};base64,${file.buffer.toString(
+    "base64"
+  )}`;
+
+  const response = await cloudinary.uploader.upload(imageBase64, {
+    folder: "chat-app",
+    transformation: {
+      quality: "auto",
+    },
+  });
+  console.log("cloudinary secure url: ", response.secure_url);
+
+  appAssert(response, BAD_REQUEST, "failed to upload profile image");
+  //* update the user details
+  const updatedUserDetails = await userModel.findByIdAndUpdate(req.userId, {
+    image: response.secure_url,
+  });
+  appAssert(updatedUserDetails, BAD_REQUEST, "failed to update profile");
+  //* return the updated user details
+  res.status(OK).json({
+    user: updatedUserDetails?.omitPassword(),
+  });
+});
+
 export {
   register,
   login,
@@ -157,4 +185,5 @@ export {
   verifyEmail,
   forgetUserPassword,
   resetUserPassword,
+  updateUserDetails,
 };

@@ -4,7 +4,6 @@ import { User } from "../../types/userType";
 import { RegisterFormData } from "@/pages/Register";
 import { LoginFormData } from "@/pages/Login";
 
-
 interface AuthState {
   authUser: User | null;
   isSigningIn: boolean;
@@ -43,4 +42,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   signUp: async (data: any) => axiosIntance.post("/auth/v1/register", data),
   login: async (data: any) => axiosIntance.post("/auth/v1/login", data),
   logout: async () => axiosIntance.get("/auth/v1/logout"),
+  updateProfile: async (data) =>
+    axiosIntance.put("/auth/v1/update", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
 }));
