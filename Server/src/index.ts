@@ -13,7 +13,6 @@ const app = express();
 const port = PORT || 3000;
 
 //? middlewares
-
 app.use(express.json());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -26,17 +25,20 @@ app.use(
   })
 );
 
+//? health route
 app.get("/", async (req: Request, res: Response) => {
   res.status(OK).json({
     status: "healthy",
   });
 });
 
-//?all of our routes
+//? all of our api routes
 app.use("/api", routes);
 
+//? error handling middleware
 app.use(errorHandler);
 
+//? start the server
 app.listen(port, async () => {
   console.log(`server is listening on ${port}`);
   await connectDb();

@@ -1,5 +1,5 @@
 import { BAD_REQUEST, CREATED, OK, UNAUTHORIZED } from "../constants/http";
-import userModel from "../models/user.model";
+
 import { asyncHandler } from "../utils/asyncHandler";
 import { z } from "zod";
 import {
@@ -9,6 +9,7 @@ import {
   resetPassword,
   sendPasswordResetEmail,
   verifyEmailByCode,
+  updateUser,
 } from "../services/auth.services";
 import {
   emailSchema,
@@ -24,7 +25,9 @@ import {
   getRefreshTokenOption,
 } from "../utils/cookies";
 import appAssert from "../utils/appAssert";
-import cloudinary from "../config/cloudinary";
+import userModel from "../models/user.model";
+import { NODE_ENV } from "../constants/env";
+import { oneDayFromNow, sevenDaysFromNow } from "../utils/date";
 
 const register = asyncHandler(async (req, res) => {
   const parsedData = RegisterSchema.parse({
@@ -66,16 +69,16 @@ const login = asyncHandler(async (req, res) => {
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
+    sameSite: NODE_ENV === "development" ? "strict" : "none",
+    expires: oneDayFromNow(),
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: NODE_ENV === "development" ? "strict" : "none",
     path: "/api/auth/v1/refresh",
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+    expires: sevenDaysFromNow(),
   });
 
   res.status(OK).json({ message: "User Login Success", user });
@@ -148,32 +151,22 @@ const resetUserPassword = asyncHandler(async (req, res, next) => {
 const updateUserDetails = asyncHandler(async (req, res, next) => {
   //* get the user details from the request
   const file = req.file;
-  console.log(file);
+  const { bio } = req.body;
 
-  appAssert(file, BAD_REQUEST, "profile image is invalid");
+  const updatedUserDetails = await updateUser(file, bio);
 
-  //* if there is an image then upload it first then grab the url
-  const imageBase64 = `data:${file.mimetype};base64,${file.buffer.toString(
-    "base64"
-  )}`;
+  //* Ensure user exists before updating
+  const updatedUser = await userModel.findByIdAndUpdate(
+    req.userId,
+    { ...updatedUserDetails },
+    { new: true }
+  );
+  appAssert(updatedUser, BAD_REQUEST, "User not found or update failed");
 
-  const response = await cloudinary.uploader.upload(imageBase64, {
-    folder: "chat-app",
-    transformation: {
-      quality: "auto",
-    },
-  });
-  console.log("cloudinary secure url: ", response.secure_url);
-
-  appAssert(response, BAD_REQUEST, "failed to upload profile image");
-  //* update the user details
-  const updatedUserDetails = await userModel.findByIdAndUpdate(req.userId, {
-    image: response.secure_url,
-  });
-  appAssert(updatedUserDetails, BAD_REQUEST, "failed to update profile");
-  //* return the updated user details
-  res.status(OK).json({
-    user: updatedUserDetails?.omitPassword(),
+  //* Send response
+  return res.status(OK).json({
+    user: updatedUser?.omitPassword(),
+    message: "your details updated",
   });
 });
 

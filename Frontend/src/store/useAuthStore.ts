@@ -14,6 +14,7 @@ interface AuthState {
   login: (data: LoginFormData) => Promise<void>;
   logout: () => Promise<void>;
   uploadImage: (image: FormData) => Promise<any>;
+  updateProfile: (data: any) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -26,7 +27,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isCheckingAuth: true });
       const result = await axiosIntance.get("/user/v1/getAuthUser");
-      set({ authUser: result.user });
+      set({ authUser: result.data.user });
     } catch (error) {
       set({ authUser: null });
       console.log(error);

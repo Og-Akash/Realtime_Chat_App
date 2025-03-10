@@ -7,9 +7,10 @@ import {
   verifyEmail,
   forgetUserPassword,
   resetUserPassword,
-  updateUserDetails
+  updateUserDetails,
 } from "../handler/auth.handler";
 import { upload } from "../services/multar";
+import verifyJWT from "../middleware/auth.middleware";
 
 const route = express.Router();
 
@@ -20,6 +21,11 @@ route.get("/refresh", refreshAccessToken);
 route.get("/email/verify/:code", verifyEmail);
 route.post("/password/forgot", forgetUserPassword);
 route.post("/password/reset", resetUserPassword);
-route.put("/update", upload.single("profileImage"),updateUserDetails);
+route.put(
+  "/update",
+  verifyJWT,
+  upload.single("profileImage"),
+  updateUserDetails
+);
 
 export default route;

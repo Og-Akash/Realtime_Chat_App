@@ -53,8 +53,9 @@ const Navbar = ({ authUser }: NavParams) => {
               <div className="w-10 rounded-md">
                 <img
                   width={40}
-                  alt="Tailwind CSS Navbar component"
+                  alt="profile-image"
                   src={authUser.image}
+                  className="rounded-full object-top"
                 />
               </div>
             </div>

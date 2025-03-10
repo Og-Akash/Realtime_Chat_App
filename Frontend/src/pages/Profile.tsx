@@ -1,17 +1,28 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
-import { CameraIcon, Lock, LogOut, Mail, Store, User } from "lucide-react";
-import { useState } from "react";
+import {
+  CameraIcon,
+  CircleCheck,
+  Lock,
+  LogOut,
+  Mail,
+  Store,
+  User,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const Profile = () => {
   const { authUser, updateProfile } = useAuthStore();
   const [selectedImage, setSeletedImage] = useState("");
+  const [bio, setBio] = useState(authUser?.bio);
+  const [isUpdateBio, setIsUpdateBio] = useState(false);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (image) => updateProfile(image),
-    onSuccess:(res) => {
+    mutationFn: (data: FormData) => updateProfile(data),
+    onSuccess: (res: any) => {
       toast.success(res.message ?? "Profile updated successfully");
+      setIsUpdateBio(false);
     },
     onError: (error) => {
       toast.error(`Failed to update profile: ${error.message}`);
@@ -22,7 +33,7 @@ const Profile = () => {
     const file = e.target?.files?.[0];
     const reader = new FileReader();
     const formData = new FormData();
-    formData.append("profileImage", file);
+    formData.append("profileImage", file as File);
     reader.onload = async () => {
       const image = reader.result as string;
 
@@ -32,9 +43,32 @@ const Profile = () => {
     reader.readAsDataURL(file as File);
   };
 
+  const updateBio = async () => {
+    if (!bio) {
+      toast.error("Bio Must be provided!");
+      return;
+    }
+    if (bio === authUser?.bio) {
+      toast.error("Bio must be different from the current one!");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("bio", bio);
+    mutate(formData);
+  };
+
+  useEffect(() => {
+    if (bio !== authUser?.bio) {
+     return setIsUpdateBio(true);
+    }
+    if(bio === authUser?.bio){
+      return setIsUpdateBio(false);
+    }
+  }, [bio]);
+
   return (
-    <section className="h-[95%] p-10">
-      <main className="max-w-xl mx-auto p-4 border border-accent rounded-md space-y-4">
+    <section className="h-[95%] p-8">
+      <main className="max-w-xl mx-auto p-4 rounded-md space-y-4">
         <div className="text-center">
           <h1 className="text-4xl font-bold"> Profile Page</h1>
           <p className="text-base text-accent">
@@ -96,9 +130,23 @@ const Profile = () => {
               <Store className="size-5 text-accent" />
               Bio
             </div>
-            <p className="bg-base-200 px-4 py-2.5 rounded-lg border">
-              I love Coding...🔥
-            </p>
+            <div className="flex gap-4">
+              <input
+                className="bg-base-200 px-4 py-2.5 rounded-lg border w-full"
+                type="text"
+                name="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+              />
+              {isUpdateBio && (
+                <button
+                  className="text-green-500 cursor-pointer"
+                  onClick={updateBio}
+                >
+                  <CircleCheck />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

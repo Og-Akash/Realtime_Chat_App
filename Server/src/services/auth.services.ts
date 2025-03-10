@@ -1,5 +1,6 @@
 import { CLIENT_URL } from "../constants/env";
 import {
+  BAD_REQUEST,
   CONFLICT,
   INTERNAL_SERVER_ERROR,
   NOT_FOUND,
@@ -29,6 +30,8 @@ import {
   verifyToken,
 } from "../utils/jwt";
 import { sendMail } from "../utils/sendMail";
+import cloudinary from "../config/cloudinary";
+import { Multer } from "multer";
 
 export interface createAccountParams {
   username: string;
@@ -293,3 +296,37 @@ export const resetPassword = async ({ password, code }: ResetPassword) => {
     user: updateUser.omitPassword(),
   };
 };
+
+export const updateUser = async (file:any,bio:string = "") => {
+  let updatedUserData: { image?: string; bio?: string } = {};
+
+  if (file) {
+    appAssert(file, BAD_REQUEST, "profile image is invalid");
+    //* Upload image
+    const imageBase64 = `data:${file.mimetype};base64,${file.buffer.toString(
+      "base64"
+    )}`;
+
+    const response = await cloudinary.uploader.upload(imageBase64, {
+      folder: "chat-app",
+      transformation: { quality: "auto" },
+    });
+
+    console.log("cloudinary secure url:", response.secure_url);
+    appAssert(response, BAD_REQUEST, "Failed to upload profile image");
+
+    updatedUserData.image = response.secure_url;
+  }
+
+  //* check if the req have bio
+  if (bio) {
+    updatedUserData.bio = bio;
+  }
+
+  appAssert(
+    Object.keys(updatedUserData).length > 0,
+    BAD_REQUEST,
+    "No user details provided for update"
+  );
+  return updatedUserData
+}
