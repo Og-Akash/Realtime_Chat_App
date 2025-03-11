@@ -13,7 +13,6 @@ const Layout = () => {
   useEffect(() => {
     checkAuth();
   }, []);
-  console.log("current auth user", authUser);
 
   if (!authUser) {
     return (

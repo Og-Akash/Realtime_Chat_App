@@ -9,6 +9,7 @@ interface AuthState {
   isSigningIn: boolean;
   isLoggingIn: boolean;
   isCheckingAuth: boolean;
+  onlineUsers: User[] | null;
   checkAuth: () => Promise<void>;
   signUp: (data: RegisterFormData) => Promise<void>;
   login: (data: LoginFormData) => Promise<void>;
@@ -22,12 +23,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   isSigningIn: false,
   isLoggingIn: false,
   isCheckingAuth: false,
+  onlineUsers: [],
 
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
       const result = await axiosIntance.get("/user/v1/getAuthUser");
-      set({ authUser: result.data.user });
+      set({ authUser: result.user});
     } catch (error) {
       set({ authUser: null });
       console.log(error);

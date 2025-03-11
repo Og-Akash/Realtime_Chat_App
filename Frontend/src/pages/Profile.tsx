@@ -171,7 +171,7 @@ const Profile = () => {
             <Lock size={16} />
             Change Password
           </button>
-          <button className="btn text-base bg-error inline-flex gap-2">
+          <button className="btn text-primary-content bg-error inline-flex gap-2">
             <LogOut size={16} /> Logout
           </button>
         </div>

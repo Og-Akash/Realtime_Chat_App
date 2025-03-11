@@ -9,7 +9,7 @@ export const axiosIntance = axios.create({
 });
 
 axiosIntance.interceptors.response.use(
-  (response) => response,
+  (response) => response.data,
   (error) => {
     const { status, data } = error.response;
     return Promise.reject({ status, ...data });
