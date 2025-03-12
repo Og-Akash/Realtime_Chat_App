@@ -8,8 +8,8 @@ import helmet from "helmet";
 import { errorHandler } from "./middleware/error.middleware";
 import routes from "./routes/index.route";
 import { OK } from "./constants/http";
+import {app, server} from "./utils/socket"
 
-const app = express();
 const port = PORT || 3000;
 
 //? middlewares
@@ -39,7 +39,7 @@ app.use("/api", routes);
 app.use(errorHandler);
 
 //? start the server
-app.listen(port, async () => {
+server.listen(port, async () => {
   console.log(`server is listening on ${port}`);
   await connectDb();
 });

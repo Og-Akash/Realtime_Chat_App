@@ -1,6 +1,5 @@
 import { useChatStore } from "@/store/useChatStore";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
 import SidebarSceleton from "./ui/SidebarSceleton";
 import { Users } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -13,8 +12,6 @@ const Sidebar = () => {
     queryKey: ["users"],
     queryFn: () => getUser(),
   });
-
-  console.log(users?.data);
 
   if (isPending) {
     return <SidebarSceleton />;
@@ -36,13 +33,13 @@ const Sidebar = () => {
 
       {/* all users listed here */}
 
-      <div className="overflow-y-auto p-3 w-full">
-        {users?.map((user:User) => (
+      <div className="overflow-y-auto p-1 lg:p-3 w-full">
+        {users?.map((user: User) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
             className={`
-        cursor-pointer w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors
+        cursor-pointer w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors rounded-md
         ${
           selectedUser?._id === user._id
             ? "bg-base-300 ring-1 ring-base-300"
@@ -50,20 +47,21 @@ const Sidebar = () => {
         }
         `}
           >
-            <div className="relative mx-auto lg:mx-0 flex items-center gap-3">
+            <div className="relative mx-auto lg:mx-0 flex items-center lg:gap-3">
               <img
                 className="rounded-full size-12 object-cover"
                 src={user.image}
                 alt={user.username}
               />
-              {/* User info */}
-              <div className="hidden lg:block text-left min-w-0">
-                <span className="truncate text-accent font-medium">
-                  {user.username}
-                </span>
-                <div className="text-sm text-zinc-300">
-                  {onlineUsers?.includes(user._id) ? "online" : "offline"}
-                </div>
+              <span className="absolute size-3 bg-green-400 ring-1 ring-zinc-900 rounded-full right-0 bottom-0" />
+            </div>
+            {/* User info */}
+            <div className="hidden lg:block text-left min-w-0">
+              <span className="truncate text-accent font-medium">
+                {user.username}
+              </span>
+              <div className="text-sm text-zinc-200">
+                {onlineUsers?.includes(user._id as any) ? "online" : "offline"}
               </div>
             </div>
           </button>

@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { useChatStore } from "@/store/useChatStore";
 
 const Home = () => {
-  const { getUser, selectedUser } = useChatStore();
+  const { selectedUser } = useChatStore();
   return (
     <main className="h-[calc(100vh-4rem)] bg-base-200">
       <div className="max-w-6xl mx-auto p-4 rounded-md space-y-4 h-full">

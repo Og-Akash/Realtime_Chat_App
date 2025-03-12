@@ -9,10 +9,10 @@ const NoUserSelected = () => {
         <div className="flex justify-center gap-4 mb-4">
           <div className="relative">
             <div
-              className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center
+              className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center
              justify-center animate-bounce"
             >
-              <MessageSquare className="w-8 h-8 text-accent " />
+              <MessageSquare className="size-12 text-accent p-2" />
             </div>
           </div>
         </div>

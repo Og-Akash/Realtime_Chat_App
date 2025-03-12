@@ -1,3 +1,4 @@
+import { fileToBase64 } from "@/lib/base64Image";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -30,17 +31,13 @@ const Profile = () => {
   });
 
   const updateProfileImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target?.files?.[0];
-    const reader = new FileReader();
+    const file = e.target?.files?.[0] as File;
     const formData = new FormData();
     formData.append("profileImage", file as File);
-    reader.onload = async () => {
-      const image = reader.result as string;
-
-      setSeletedImage(image);
-      mutate(formData);
-    };
-    reader.readAsDataURL(file as File);
+    
+    const image = await fileToBase64(file)
+    setSeletedImage(image);
+    mutate(formData);
   };
 
   const updateBio = async () => {

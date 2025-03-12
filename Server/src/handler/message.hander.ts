@@ -1,5 +1,11 @@
 import cloudinary from "../config/cloudinary";
-import { CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from "../constants/http";
+import {
+  BAD_REQUEST,
+  CREATED,
+  INTERNAL_SERVER_ERROR,
+  NOT_FOUND,
+  OK,
+} from "../constants/http";
 import Message from "../models/message.model";
 import userModel from "../models/user.model";
 import appAssert from "../utils/appAssert";
@@ -43,16 +49,25 @@ const getMessages = asyncHandler(async (req, res) => {
 
 const sendMessageToUser = asyncHandler(async (req, res) => {
   //* get the message body
-  const { image, text } = req.body;
-  const { id:receiverId } = req.params;
+  const { text } = req.body;
+  const image = req.file;
+  const { id: receiverId } = req.params;
+
   //* check the body for image or text
   let imageUrl;
   //* if image is there then upload it and store the url.
-  if (imageUrl) {
-    const responseFromCLoudinary = await cloudinary.uploader.upload(image, {
-      folder: "chat-app",
-      transformation: [{ quality: "auto" }],
-    });
+  if (image) {
+    const imageBase64 = `data:${
+      req.file.mimetype
+    };base64,${req.file.buffer.toString("base64")}`;
+
+    const responseFromCLoudinary = await cloudinary.uploader.upload(
+      imageBase64,
+      {
+        folder: "chat-app",
+        transformation: [{ quality: "auto" }],
+      }
+    );
 
     imageUrl = responseFromCLoudinary.secure_url;
   }
@@ -61,15 +76,15 @@ const sendMessageToUser = asyncHandler(async (req, res) => {
     senderId: req.userId,
     receiverId,
     text,
-    imageUrl,
+    image: imageUrl,
   });
 
-  appAssert(storeMessage,INTERNAL_SERVER_ERROR, "failed to store message")
+  appAssert(storeMessage, INTERNAL_SERVER_ERROR, "failed to store message");
 
   //*Todo --> realtime message sending using socket io
 
   //* return the response
-  res.status(CREATED).json(storeMessage)
+  res.status(CREATED).json(storeMessage);
   //* send the message to the other user
 });
 

@@ -2,3 +2,30 @@
 @plugin "daisyui" {
     themes: all;
   }
+
+  @layer utilities {
+    /* Scrollbar Styling */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 8px; /* Adjust scrollbar width */
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: var(--b1); /* Dark background */
+      border-radius: 10px;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--bc); /* Scrollbar thumb color */
+      border-radius: 10px;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: var(--a); /* Hover effect */
+    }
+  
+    /* Firefox scrollbar */
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: var(--bc) var(--b1);
+    }
+  }

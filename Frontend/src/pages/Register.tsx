@@ -12,6 +12,7 @@ import {
   MessageCircleCode,
   User,
 } from "lucide-react";
+import { fileToBase64 } from "@/lib/base64Image";
 export interface RegisterFormData {
   username: string;
   email: string;
@@ -64,7 +65,7 @@ const Register = () => {
     });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -79,10 +80,8 @@ const Register = () => {
 
     setImageFile(file);
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => setPreviewImage(reader.result as string);
-    reader.onerror = () => toast.error("Error converting image");
+    const image = await fileToBase64(file)
+    setPreviewImage(image);
   };
 
   return (
