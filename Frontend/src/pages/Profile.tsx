@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const Profile = () => {
-  const { authUser, updateProfile } = useAuthStore();
+  const { authUser, updateProfile, onlineUsers } = useAuthStore();
   const [selectedImage, setSeletedImage] = useState("");
   const [bio, setBio] = useState(authUser?.bio);
   const [isUpdateBio, setIsUpdateBio] = useState(false);
@@ -158,7 +158,7 @@ const Profile = () => {
 
             <div className="flex justify-between items-center border-b border-zinc-700 py-2">
               <span>Account Status</span>
-              <span className="text-green-500">Active</span>
+              <span className="text-green-500">{onlineUsers?.includes(authUser?._id as any) ? "Online" : "Offline"}</span>
             </div>
           </div>
         </div>

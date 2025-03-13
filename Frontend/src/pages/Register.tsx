@@ -21,17 +21,16 @@ export interface RegisterFormData {
 }
 
 const Register = () => {
-  const { authUser, signUp, uploadImage,checkAuth } = useAuthStore();
+  const { authUser, signUp, uploadImage, checkAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-    useEffect(() => {
-      checkAuth();
-    }, []);
-  
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   const {
     register,
@@ -60,7 +59,7 @@ const Register = () => {
     mutate(imageFile, {
       onSuccess: (imageUrl) => {
         signUp({ ...data, image: imageUrl || "" });
-        navigate("/")
+        navigate("/");
       },
     });
   };
@@ -80,7 +79,7 @@ const Register = () => {
 
     setImageFile(file);
 
-    const image = await fileToBase64(file)
+    const image = await fileToBase64(file);
     setPreviewImage(image);
   };
 
@@ -204,8 +203,8 @@ const InputField = ({
     <label className="fieldset-label font-medium">{label}</label>
     <div className="relative">
       {icon && (
-        <div className="absolute inset-y-0 left-3 flex items-center text-base-content/40">
-          {icon}
+        <div className="absolute inset-y-0 pl-3 flex items-center pointer-events-none z-10">
+          <span className="text-base-content/40">{icon}</span>
         </div>
       )}
       <input

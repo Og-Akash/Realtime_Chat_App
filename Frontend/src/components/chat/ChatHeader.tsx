@@ -1,8 +1,11 @@
+import { formatDate } from "@/lib/formatDate";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useChatStore } from "@/store/useChatStore";
 import { ArrowLeft, Phone, Video } from "lucide-react";
 
 const ChatHeader = () => {
   const { selectedUser,clearSelectedUser } = useChatStore();
+  const {onlineUsers,lastSeen} = useAuthStore()
   return (
     <div className="flex justify-between items-center bg-accent-content rounded-md">
       <div className="relative flex items-center gap-3 border-b p-2 border-base-300">
@@ -20,8 +23,7 @@ const ChatHeader = () => {
             {selectedUser?.username}
           </span>
           <div className="text-sm text-zinc-300">
-            online
-            {/* {onlineUsers?.includes(selectedUser._id) ? "online" : "offline"} */}
+            {onlineUsers?.includes(selectedUser?._id as any) ? "online" :lastSeen[selectedUser?._id as any] ?  "Last Seen " + formatDate(lastSeen[selectedUser?._id as any]) : "offline"}
           </div>
         </div>
       </div>

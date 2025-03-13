@@ -10,6 +10,7 @@ import Message from "../models/message.model";
 import userModel from "../models/user.model";
 import appAssert from "../utils/appAssert";
 import { asyncHandler } from "../utils/asyncHandler";
+import { getSocketId, io } from "../utils/socket";
 
 const getUsers = asyncHandler(async (req, res) => {
   //* Fetch all users from the database
@@ -72,19 +73,29 @@ const sendMessageToUser = asyncHandler(async (req, res) => {
     imageUrl = responseFromCLoudinary.secure_url;
   }
   //* store the message to db
-  const storeMessage = await Message.create({
+  const newMessage = new Message({
     senderId: req.userId,
     receiverId,
     text,
     image: imageUrl,
   });
 
-  appAssert(storeMessage, INTERNAL_SERVER_ERROR, "failed to store message");
+  await newMessage.save()
 
-  //*Todo --> realtime message sending using socket io
+  appAssert(newMessage, INTERNAL_SERVER_ERROR, "failed to store message");
+
+  //! realtime message sending using socket io
+
+  const receiverSocketId = getSocketId(receiverId)
+  console.log("receiverSocketId :",receiverSocketId);
+  
+
+  if(receiverSocketId) {
+    io.to(receiverSocketId).emit("newMessage",newMessage)
+  }
 
   //* return the response
-  res.status(CREATED).json(storeMessage);
+  res.status(CREATED).json(newMessage);
   //* send the message to the other user
 });
 

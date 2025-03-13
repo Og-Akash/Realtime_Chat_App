@@ -32,7 +32,8 @@ import Layout from "@/components/Layout";
 // };
 
 export const Approuter = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser} = useAuthStore();
+  
   return (
     <Routes>
       <Route

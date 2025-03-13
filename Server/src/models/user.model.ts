@@ -9,6 +9,7 @@ export interface IUser extends Document {
   role: "user" | "admin";
   bio: string;
   isVerified: boolean;
+  lastSeen?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(val: string): Promise<boolean>;
@@ -33,6 +34,7 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
+    lastSeen: { type: Date, default: null },
   },
   { timestamps: true }
 );

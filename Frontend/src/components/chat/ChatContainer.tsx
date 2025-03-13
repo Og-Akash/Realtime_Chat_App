@@ -7,20 +7,33 @@ import Message from "./Message";
 import { useEffect, useRef } from "react";
 
 const ChatContainer = () => {
-  const { getMessages, selectedUser } = useChatStore();
+  const {
+    getMessages,
+    selectedUser,
+    messages,
+    subscribeToMessages,
+    unSubscribeToMessages,
+  } = useChatStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages, isPending } = useQuery({
-    queryKey: ["messages"],
+  const { isPending } = useQuery({
+    queryKey: ["messages", selectedUser?._id],
     queryFn: () => getMessages(selectedUser?._id as string),
+    staleTime: 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
+    subscribeToMessages();
+    return () => unSubscribeToMessages();
+  }, [subscribeToMessages, unSubscribeToMessages]);
+
+  useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  });
 
   return (
     <div className="flex flex-1 flex-col overflow-auto h-full">

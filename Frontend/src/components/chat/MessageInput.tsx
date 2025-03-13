@@ -2,7 +2,7 @@ import { fileToBase64 } from "@/lib/base64Image";
 import { useChatStore } from "@/store/useChatStore";
 import { useMutation } from "@tanstack/react-query";
 import { Image, Send, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 const MessageInput = () => {
@@ -29,15 +29,16 @@ const MessageInput = () => {
 
   const removeSelectedImage = () => {
     setImagePreview("");
+    setImageFile(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       const formData = new FormData();
       formData.append("text", message);
 
-      if(imageFile){
+      if (imageFile) {
         formData.append("image", imageFile);
       }
 
@@ -63,10 +64,15 @@ const MessageInput = () => {
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
+            {isPending && (
+              <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 loading loading-spinner loading-sm"></span>
+            )}
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              className={`w-20 h-20 object-cover rounded-lg border border-zinc-700 ${
+                isPending && "opacity-30"
+              }`}
             />
             <button
               onClick={removeSelectedImage}
@@ -105,7 +111,7 @@ const MessageInput = () => {
         />
         <button
           className="rounded-full hover:bg-base-200/10 cursor-pointer disabled:opacity-40"
-          disabled={message.length === 0}
+          disabled={(!imageFile && !message.trim()) || isPending}
         >
           <Send size={24} />
         </button>

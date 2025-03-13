@@ -4,10 +4,12 @@ import SidebarSceleton from "./ui/SidebarSceleton";
 import { Users } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { User } from "../../types/userType";
+import { useCallback, useState } from "react";
 
 const Sidebar = () => {
   const { getUser, selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
+  const [isShowOnlyOnline, setIsShowOnlyOnline] = useState(false);
   const { data: users, isPending } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUser(),
@@ -16,6 +18,10 @@ const Sidebar = () => {
   if (isPending) {
     return <SidebarSceleton />;
   }
+
+  const filteredUsers = isShowOnlyOnline
+    ? users.filter((user: any) => onlineUsers?.includes(user._id))
+    : users;
 
   return (
     <aside
@@ -28,13 +34,27 @@ const Sidebar = () => {
           <Users className="w-6 h-6" />
           <span className="font-medium hidden lg:block">All Users</span>
         </div>
-        {/* TODO: online players toggler */}
+
+        <div className="mt-4 flex gap-3 w-full justify-between items-center">
+          <label className="hidden lg:block text-sm font-medium text-gray-600">
+            Only show online users
+          </label>
+          <input
+            type="checkbox"
+            checked={isShowOnlyOnline}
+            onChange={() => setIsShowOnlyOnline(!isShowOnlyOnline)}
+            className="toggle"
+          />
+        </div>
       </div>
 
       {/* all users listed here */}
 
-      <div className="overflow-y-auto p-1 lg:p-3 w-full">
-        {users?.map((user: User) => (
+      <div className="overflow-y-auto p-1 lg:p-3 w-full custom-scrollbar">
+        {filteredUsers.length === 0 && (
+          <span className="text-accent font-medium">No Online Users to Chat</span>
+        )}
+        {filteredUsers?.map((user: User) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
@@ -53,14 +73,16 @@ const Sidebar = () => {
                 src={user.image}
                 alt={user.username}
               />
-              <span className="absolute size-3 bg-green-400 ring-1 ring-zinc-900 rounded-full right-0 bottom-0" />
+              {onlineUsers?.includes(user._id as any) && (
+                <span className="absolute size-3 bg-green-400 ring-1 ring-zinc-900 rounded-full right-0 bottom-0" />
+              )}
             </div>
             {/* User info */}
             <div className="hidden lg:block text-left min-w-0">
               <span className="truncate text-accent font-medium">
                 {user.username}
               </span>
-              <div className="text-sm text-zinc-200">
+              <div className="text-base">
                 {onlineUsers?.includes(user._id as any) ? "online" : "offline"}
               </div>
             </div>

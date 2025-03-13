@@ -27,7 +27,7 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(`PATH ${req.path}`, err);
+  // console.log(`PATH ${req.path}`, err);
 
   if(req.path === refreshTokenPath){
     clearAuthCookies(res)
