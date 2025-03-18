@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import Loader from "@/components/ui/Loader";
 
 export interface LoginFormData {
   username: string;
@@ -20,10 +21,10 @@ export interface LoginFormData {
 }
 
 const Login = () => {
-  const { authUser, login, checkAuth } = useAuthStore();
+  const { authUser, login, checkAuth, isCheckingAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const {state} = useLocation()
+  const { state } = useLocation();
 
   useEffect(() => {
     checkAuth();
@@ -33,8 +34,7 @@ const Login = () => {
     return <Navigate to="/" replace />;
   }
 
-  console.log("redirect url: ",state?.redirectUrl);
-  
+  console.log("redirect url: ", state?.redirectUrl);
 
   const {
     register,
@@ -58,6 +58,10 @@ const Login = () => {
   const onSubmit = async (data: LoginFormData) => {
     mutate(data);
   };
+
+  if (isCheckingAuth) {
+    return <Loader />;
+  }
 
   return (
     <div className="min-h-screen min-w-screen grid lg:grid-cols-2">

@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import { fileToBase64 } from "@/lib/base64Image";
+import Loader from "@/components/ui/Loader";
 export interface RegisterFormData {
   username: string;
   email: string;
@@ -21,7 +22,8 @@ export interface RegisterFormData {
 }
 
 const Register = () => {
-  const { authUser, signUp, uploadImage, checkAuth } = useAuthStore();
+  const { authUser, signUp, uploadImage, checkAuth, isCheckingAuth } =
+    useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -82,6 +84,10 @@ const Register = () => {
     const image = await fileToBase64(file);
     setPreviewImage(image);
   };
+
+  if (isCheckingAuth) {
+    return <Loader />;
+  }
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">

@@ -18,6 +18,7 @@ const getUsers = asyncHandler(async (req, res) => {
     .find({
       _id: { $ne: req.userId },
     })
+    .limit(5)
     .select("-password");
   if (allUsers.length > 0) {
     return res.status(200).json(allUsers);

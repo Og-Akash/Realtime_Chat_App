@@ -7,6 +7,7 @@ import { useAuthStore } from "./useAuthStore";
 interface ChatStore {
   selectedUser: User | null;
   messages: Message[] | [];
+  users: User[] | [];
   setSelectedUser: (user: User) => void;
   clearSelectedUser: () => void;
   getUser: () => Promise<any>;
@@ -19,9 +20,14 @@ interface ChatStore {
 export const useChatStore = create<ChatStore>((set, get) => ({
   selectedUser: null,
   messages: [],
+  users: [],
   setSelectedUser: (selectedUser: User) => set({ selectedUser }),
   clearSelectedUser: () => set({ selectedUser: null }),
-  getUser: async () => axiosInstance.get("/messages/users"),
+  getUser: async () => {
+   const res = await axiosInstance.get("/messages/users")
+   set({users: res})
+   return res
+  },
 
   getMessages: async (userId: string) => {
     const res = await axiosInstance.get(`/messages/${userId}`);

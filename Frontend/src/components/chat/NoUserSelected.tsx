@@ -3,7 +3,7 @@ import React from 'react'
 
 const NoUserSelected = () => {
   return (
-    <div className="w-full h-full flex flex-1 flex-col items-center justify-center p-16 bg-base-100/50">
+    <div className="hidden w-full h-full md:flex flex-1 flex-col items-center justify-center p-16 bg-base-100/50">
       <div className="max-w-md text-center space-y-3">
         {/* Icon Display */}
         <div className="flex justify-center gap-4 mb-4">
