@@ -35,7 +35,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
-      const result = await axiosInstance.get<{user:AuthUser}>("/user/v1/getAuthUser");
+      const result = await axiosInstance.get<{ user: AuthUser }>(
+        "/user/v1/getAuthUser"
+      );
       set({ authUser: result.user });
       get().connectSocket();
     } catch (error) {
@@ -73,27 +75,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket = io(import.meta.env.VITE_BACKEND,{
+    const socket = io(import.meta.env.VITE_BACKEND, {
       query: {
-        userId: authUser._id
-      }
+        userId: authUser._id,
+      },
     });
     socket.connect();
-    set({socket})
+    set({ socket });
 
-    socket.on("getOnlineUsers", (userIds)=>{
-      set({onlineUsers: userIds})
-    })
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
 
     //? listening to last seen event
-    socket.on("user:last-seen", ({userId,lastSeen}) =>{
+    socket.on("user:last-seen", ({ userId, lastSeen }) => {
       set((state) => ({
-        lastSeen:{
+        lastSeen: {
           ...state.lastSeen,
-          [userId]: lastSeen
-        }
-      }))
-    })
+          [userId]: lastSeen,
+        },
+      }));
+    });
   },
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket?.disconnect();

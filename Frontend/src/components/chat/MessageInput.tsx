@@ -1,17 +1,23 @@
 import { fileToBase64 } from "@/lib/base64Image";
 import { useChatStore } from "@/store/useChatStore";
 import { useMutation } from "@tanstack/react-query";
-import { Image, Send, X } from "lucide-react";
-import React, { useRef, useState } from "react";
+import { File, Image, Paperclip, Send, Smile, Video, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
+import { useThemeStore } from "@/store/useThemeStore";
 
 const MessageInput = () => {
   const [message, setMessage] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const emojiRef = useRef<HTMLDivElement>(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   const { sendMessage } = useChatStore();
+  const { theme } = useThemeStore();
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const image = e.target?.files?.[0] as File;
@@ -31,6 +37,10 @@ const MessageInput = () => {
     setImagePreview("");
     setImageFile(null);
     if (inputRef.current) inputRef.current.value = "";
+  };
+
+  const addEmoji = (emoji: any) => {
+    setMessage((prev) => prev + emoji.native);
   };
 
   const { mutate, isPending } = useMutation({
@@ -59,6 +69,18 @@ const MessageInput = () => {
     mutate();
   };
 
+  useEffect(() => {
+    function handleCloseEmojiContainer(e: PointerEvent) {
+      if (emojiRef.current && !emojiRef.current.contains(e.target as Node)) {
+        setShowPicker(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handleCloseEmojiContainer);
+    return () =>
+      document.removeEventListener("pointerdown", handleCloseEmojiContainer);
+  }, []);
+
   return (
     <div className="p-4 w-full">
       {imagePreview && (
@@ -85,7 +107,50 @@ const MessageInput = () => {
           </div>
         </div>
       )}
-      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+      <form
+        onSubmit={handleSendMessage}
+        className="flex items-center gap-2 relative"
+      >
+        <div className="dropdown dropdown-top">
+          <button
+            tabIndex={0}
+            type="button"
+            className={`rounded-full hover:bg-base-200/10 cursor-pointer ${
+              imagePreview && "text-accent"
+            }`}
+          >
+            <Paperclip size={24} />
+          </button>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+          >
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+            >
+              <Image className="text-accent" />
+              Image File
+            </button>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+            >
+              <Video className="text-secondary" />
+              Video File
+            </button>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+            >
+              <File className="text-primary" />
+              Normal File
+            </button>
+          </ul>
+        </div>
         <input
           type="text"
           value={message}
@@ -93,15 +158,29 @@ const MessageInput = () => {
           placeholder="Type some messages..."
           className="input focus:input-accent flex-1 placeholder:text-base"
         />
+        {/* Emoji Picker */}
         <button
           type="button"
-          onClick={() => inputRef.current?.click()}
-          className={`rounded-full hover:bg-base-200/10 cursor-pointer ${
-            imagePreview && "text-accent"
-          }`}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevents event from reaching document
+            setShowPicker((prev) => !prev);
+          }}
+          className="p-2 text-xl cursor-pointer"
         >
-          <Image size={24} />
+          <Smile size={22} />
         </button>
+
+        {/* Emoji Picker */}
+        {showPicker && (
+          <div ref={emojiRef} className="absolute bottom-12 right-20">
+            <Picker
+              data={data}
+              onEmojiSelect={addEmoji}
+              theme={theme === "light" ? "light" : "dark"}
+            />
+          </div>
+        )}
+
         <input
           type="file"
           onChange={handleImageChange}

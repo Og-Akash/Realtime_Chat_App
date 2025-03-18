@@ -9,7 +9,7 @@ import {
   MessageCircleCode,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -23,6 +23,7 @@ const Login = () => {
   const { authUser, login, checkAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const {state} = useLocation()
 
   useEffect(() => {
     checkAuth();
@@ -31,6 +32,9 @@ const Login = () => {
   if (authUser) {
     return <Navigate to="/" replace />;
   }
+
+  console.log("redirect url: ",state?.redirectUrl);
+  
 
   const {
     register,
@@ -42,7 +46,7 @@ const Login = () => {
     mutationFn: login,
     onSuccess: () => {
       toast.success("User Logged In");
-      navigate("/", {
+      navigate(state?.redirectUrl ?? "/", {
         replace: true,
       });
     },

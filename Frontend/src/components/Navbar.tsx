@@ -21,7 +21,12 @@ const Navbar = ({ authUser }: NavParams) => {
     mutationFn: logout,
     onSuccess: () => {
       toast.success("User Logged Out");
-      navigate("/login", { replace: true });
+      navigate("/login", {
+        replace: true,
+        state: {
+          redirectUrl: window.location.pathname,
+        },
+      });
     },
     onError: () => {
       toast.error("Failed to logout");
@@ -77,14 +82,13 @@ const Navbar = ({ authUser }: NavParams) => {
                 <Settings size={14} className="text-accent" />
                 Setting
               </Link>
-              <Link
-                to="#"
+              <button
                 onClick={() => mutate()}
-                className="hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
+                className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
               >
                 <LogOut size={14} className="text-accent" />
                 Logout
-              </Link>
+              </button>
             </ul>
           </div>
         </div>

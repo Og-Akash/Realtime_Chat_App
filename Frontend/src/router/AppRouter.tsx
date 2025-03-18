@@ -1,8 +1,4 @@
-import {
-  Navigate,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "@/pages/Home";
 import Register from "@/pages/Register";
 import Login from "@/pages/Login";
@@ -32,8 +28,8 @@ import Layout from "@/components/Layout";
 // };
 
 export const Approuter = () => {
-  const { authUser} = useAuthStore();
-  
+  const { authUser } = useAuthStore();
+
   return (
     <Routes>
       <Route
@@ -46,11 +42,11 @@ export const Approuter = () => {
       </Route>
       <Route
         path="/register"
-        element={!authUser ? <Register /> : <Navigate to="/" />}
+        element={!authUser ? <Register /> : <Navigate to="/" replace />}
       />
       <Route
         path="/login"
-        element={!authUser ? <Login /> : <Navigate to="/" />}
+        element={!authUser ? <Login /> : <Navigate to="/" replace />}
       />
       <Route path="*" element={<NotFound />} />
     </Routes>
