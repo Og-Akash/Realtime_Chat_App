@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/store/useAuthStore";
+import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
 import { useMutation } from "@tanstack/react-query";
 import {
   Brain,
@@ -14,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 const SideNavbar = () => {
   const { logout, authUser } = useAuthStore();
   const navigate = useNavigate();
+  const { navigation, setNavigation } = useSidebarStore();
 
   const { mutate } = useMutation({
     mutationFn: logout,
@@ -35,19 +37,26 @@ const SideNavbar = () => {
     <aside className="rounded-lg w-16 h-full bg-base-100 flex flex-col justify-between items-center py-4">
       <div className="space-y-4 text-center">
         <div className="tooltip tooltip-right" data-tip="contacts">
-          <button className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2">
+          <button
+            onClick={() => setNavigation(NavigationType.Contacts)}
+            className={`${navigation === "contacts" && "border-l-4 border-accent"} cursor-pointer hover:bg-accent-content p-2 text-base hover:rounded-md inline-flex items-center gap-2`}
+          >
             <UserRoundCheck size={22} className="text-accent" />
           </button>
         </div>
 
         <div className="tooltip tooltip-right" data-tip="search">
-          <button className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2">
+          <button 
+          onClick={() => setNavigation(NavigationType.Search)}
+          className={`${navigation === "search" && "border-l-4 border-accent"} cursor-pointer hover:bg-accent-content p-2 text-base hover:rounded-md inline-flex items-center gap-2`}>
             <Search size={22} className="text-accent" />
           </button>
         </div>
 
         <div className="tooltip tooltip-right" data-tip="Assiestant">
-          <button className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2">
+          <button 
+          onClick={() => setNavigation(NavigationType.Assiestant)}
+          className={`${navigation === "assiestant" && "border-l-4 border-accent"} cursor-pointer hover:bg-accent-content p-2 text-base hover:rounded-md inline-flex items-center gap-2`}>
             <Brain size={22} className="text-accent" />
           </button>
         </div>

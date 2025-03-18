@@ -1,18 +1,22 @@
 import { useChatStore } from "@/store/useChatStore";
 import { useQuery } from "@tanstack/react-query";
-import SidebarSceleton from "./ui/SidebarSceleton";
-import {
-  Users,
-} from "lucide-react";
+import SidebarSceleton from "../ui/SidebarSceleton";
+import { Users } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { User } from "../../types/userType";
+import { User } from "../../../types/userType";
 import { useState } from "react";
-import SidebarActions from "./SidebarActions";
+import SidebarActions from "../SidebarActions";
+import ContactList from "./ContactList";
+import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
+import SearchContacts from "./SearchContacts";
+import Assiestant from "./Assiestant";
 
 const Sidebar = () => {
-  const { getUser, selectedUser, setSelectedUser } = useChatStore();
+  const { getUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
-  const [isShowOnlyOnline, setIsShowOnlyOnline] = useState(false);
+  const [isShowOnlyOnline] = useState(false);
+  const { navigation, setNavigation } = useSidebarStore();
+
   const { data: users, isPending } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUser(),
@@ -48,7 +52,8 @@ const Sidebar = () => {
             onChange={() => setIsShowOnlyOnline(!isShowOnlyOnline)}
             className="toggle"
           />
-        </div> */}
+        </div> 
+        */}
       </div>
 
       {/* all users listed here */}
@@ -63,40 +68,13 @@ const Sidebar = () => {
             No Online Users to Chat
           </span>
         )}
-        {filteredUsers?.map((user: User) => (
-          <button
-            key={user._id}
-            onClick={() => setSelectedUser(user)}
-            className={`
-        mb-2 cursor-pointer w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors rounded-md
-        ${
-          selectedUser?._id === user._id
-            ? "bg-base-300 ring-1 ring-base-300"
-            : ""
-        }
-        `}
-          >
-            <div className="relative flex items-center lg:gap-3">
-              <img
-                className="rounded-full size-12 object-cover"
-                src={user.image}
-                alt={user.username}
-              />
-              {onlineUsers?.includes(user._id as any) && (
-                <span className="absolute size-3 bg-green-400 ring-1 ring-zinc-900 rounded-full right-0 bottom-0" />
-              )}
-            </div>
-            {/* User info */}
-            <div className="block text-left min-w-0">
-              <span className="truncate text-accent font-medium">
-                {user.username}
-              </span>
-              <div className="text-base">
-                {onlineUsers?.includes(user._id as any) ? "online" : "offline"}
-              </div>
-            </div>
-          </button>
+        {(navigation === NavigationType.Contacts || navigation === NavigationType.Assiestant) && filteredUsers?.map((user: User) => (
+          <ContactList key={user._id} user={user} />
         ))}
+        {navigation === "search" && (
+         <SearchContacts />
+        )}
+
       </div>
     </aside>
   );

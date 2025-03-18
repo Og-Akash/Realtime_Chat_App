@@ -34,8 +34,6 @@ const Login = () => {
     return <Navigate to="/" replace />;
   }
 
-  console.log("redirect url: ", state?.redirectUrl);
-
   const {
     register,
     handleSubmit,

@@ -26,20 +26,20 @@ const SidebarActions = () => {
           tabIndex={0}
           className="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
         >
-          <button className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2">
-            <CheckCircle2Icon size={14} className="text-accent" />
+          <button className="cursor-pointer hover:bg-accent-content hover:text-accent p-2 text-base rounded-md inline-flex items-center gap-2">
+            <CheckCircle2Icon size={16} className="text-accent" />
             online
           </button>
-          <button className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2">
-            <UserRoundCheck size={14} className="text-accent" />
+          <button className="cursor-pointer hover:bg-accent-content hover:text-accent p-2 text-base rounded-md inline-flex items-center gap-2">
+            <UserRoundCheck size={16} className="text-accent" />
             Contacts
           </button>
-          <button className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2">
-            <UserRoundX size={14} className="text-accent" />
+          <button className="cursor-pointer hover:bg-accent-content hover:text-accent p-2 text-base rounded-md inline-flex items-center gap-2">
+            <UserRoundX size={16} className="text-accent" />
             Not Contacts
           </button>
-          <button className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2">
-            <Users size={14} className="text-accent" />
+          <button className="cursor-pointer hover:bg-accent-content hover:text-accent p-2 text-base rounded-md inline-flex items-center gap-2">
+            <Users size={16} className="text-accent" />
             Groups
           </button>
         </ul>
@@ -102,7 +102,7 @@ function ConverSationModal() {
               <button
                 key={user._id}
                 className={`
-         cursor-pointer w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors rounded-md
+                cursor-pointer w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors rounded-md
          `}
               >
                 <div className="relative flex items-center lg:gap-3">

@@ -1,13 +1,16 @@
 import ChatContainer from "@/components/chat/ChatContainer";
 import NoUserSelected from "@/components/chat/NoUserSelected";
-import Sidebar from "@/components/Sidebar";
+import Assiestant from "@/components/sidebar/Assiestant";
+import Sidebar from "@/components/sidebar/Sidebar";
 import SideNavbar from "@/components/SideNavbar";
 import { useChatStore } from "@/store/useChatStore";
+import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
 import { useEffect, useState } from "react";
 
 const Home = () => {
   const { selectedUser } = useChatStore(); // Assuming setSelectedUser exists
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { navigation } = useSidebarStore();
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -29,9 +32,11 @@ const Home = () => {
 
           {/* Show ChatContainer only when user is selected */}
           {selectedUser && <ChatContainer />}
-
+          {navigation === NavigationType.Assiestant && <Assiestant />}
           {/* Only show NoUserSelected on larger screens */}
-          {!selectedUser && !isMobile && <NoUserSelected />}
+          {!selectedUser &&
+            !isMobile &&
+            navigation !== NavigationType.Assiestant && <NoUserSelected />}
         </div>
       </div>
     </main>
