@@ -8,6 +8,7 @@ import Profile from "@/pages/Profile";
 import { useAuthStore } from "@/store/useAuthStore";
 import NotFound from "@/pages/NotFound";
 import Layout from "@/components/Layout";
+import ChangePassword from "@/pages/ChangePassword";
 
 // const ProtectedRoute = ({
 //   children,
@@ -39,6 +40,7 @@ export const Approuter = () => {
         <Route index element={<Home />} />
         <Route path="/setting" element={<Setting />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/change-password" element={<ChangePassword />} />
       </Route>
       <Route
         path="/register"

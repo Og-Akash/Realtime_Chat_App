@@ -12,12 +12,14 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { authUser, updateProfile, onlineUsers } = useAuthStore();
   const [selectedImage, setSeletedImage] = useState("");
   const [bio, setBio] = useState(authUser?.bio);
   const [isUpdateBio, setIsUpdateBio] = useState(false);
+  const navigate = useNavigate()
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: FormData) => updateProfile(data),
@@ -164,7 +166,7 @@ const Profile = () => {
         </div>
         {/* Action Buttons */}
         <div className="flex gap-3 justify-end w-full">
-          <button className="btn text-base text-black bg-white rounded-lg inline-flex gap-2">
+          <button onClick={() => navigate("/change-password")} className="btn text-base text-black bg-white rounded-lg inline-flex gap-2">
             <Lock size={16} />
             Change Password
           </button>

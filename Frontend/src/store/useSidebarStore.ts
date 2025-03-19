@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useChatStore } from "./useChatStore";
 
 export enum NavigationType {
   Contacts = "contacts",
@@ -19,10 +20,19 @@ type SidebarTypes = {
   setFilter: (filterOption: FilterType) => void;
 };
 
-export const useSidebarStore = create<SidebarTypes>((set,get) => ({
+export const useSidebarStore = create<SidebarTypes>((set, get) => ({
   navigation: NavigationType.Contacts,
   currentFilter: null,
-  setNavigation: (navigation: NavigationType) => set({ navigation }),
+  setNavigation: (navigation: NavigationType) => {
+    const { selectedUser, clearSelectedUser } = useChatStore.getState();
+
+    if (navigation === NavigationType.Assiestant && selectedUser) {
+      clearSelectedUser();
+    }
+
+    set({ navigation });
+  },
+
   setFilter: (filterOption: FilterType) =>
     set({
       currentFilter: filterOption === get().currentFilter ? null : filterOption,

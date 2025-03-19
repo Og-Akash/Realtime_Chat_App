@@ -7,6 +7,7 @@ import {
   verifyEmail,
   forgetUserPassword,
   resetUserPassword,
+  changeUserPassword,
   updateUserDetails,
 } from "../handler/auth.handler";
 import { upload } from "../services/multar";
@@ -21,6 +22,7 @@ route.get("/refresh", refreshAccessToken);
 route.get("/email/verify/:code", verifyEmail);
 route.post("/password/forgot", forgetUserPassword);
 route.post("/password/reset", resetUserPassword);
+route.put("/password/change", verifyJWT,changeUserPassword);
 route.put(
   "/update",
   verifyJWT,

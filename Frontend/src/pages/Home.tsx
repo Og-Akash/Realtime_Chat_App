@@ -20,7 +20,7 @@ const Home = () => {
 
   return (
     <main className="h-[calc(100vh-4rem)] bg-base-200">
-      <div className="max-w-6xl mx-auto p-1 md:p-4 rounded-md space-y-4 h-full">
+      <div className="max-w-7xl mx-auto p-1 md:p-4 rounded-md space-y-4 h-full">
         <div className="flex justify-center items-center h-full relative">
           {/* Show Sidebar in full width when no user is selected on mobile */}
           {(!isMobile || navigation !== NavigationType.Assiestant) &&

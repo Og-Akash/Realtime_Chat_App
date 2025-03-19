@@ -4,6 +4,7 @@ import { AuthUser, User } from "../../types/userType";
 import { RegisterFormData } from "@/pages/Register";
 import { LoginFormData } from "@/pages/Login";
 import { io, Socket } from "socket.io-client";
+import { ChnagePassword } from "@/pages/ChangePassword";
 
 interface AuthState {
   authUser: User | null;
@@ -18,6 +19,7 @@ interface AuthState {
   login: (data: LoginFormData) => Promise<void>;
   logout: () => Promise<void>;
   uploadImage: (image: FormData) => Promise<any>;
+  changePassword: (data: ChnagePassword) => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
   connectSocket: () => void; // add socket connection logic here
   disconnectSocket: () => void; // add socket disconnection logic here
@@ -68,6 +70,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     axiosInstance.put("/auth/v1/update", data, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
+
+  changePassword: (data: any) =>
+    axiosInstance.put("/auth/v1/password/change", data),
 
   //* socket functions
 

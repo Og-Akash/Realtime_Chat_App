@@ -7,8 +7,10 @@ import toast from "react-hot-toast";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { useThemeStore } from "@/store/useThemeStore";
+import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
 
 const MessageInput = () => {
+  const { navigation } = useSidebarStore();
   const [message, setMessage] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -112,46 +114,50 @@ const MessageInput = () => {
         onSubmit={handleSendMessage}
         className="flex items-center gap-2 relative"
       >
-        <div className="dropdown dropdown-top">
-          <button
-            tabIndex={0}
-            type="button"
-            className={`rounded-full hover:bg-base-200/10 cursor-pointer ${
-              imagePreview && "text-accent"
-            }`}
-          >
-            <Paperclip size={24} />
-          </button>
-          <ul
-            tabIndex={0}
-            className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
-          >
+        {/* file dropdown */}
+        {navigation !== NavigationType.Assiestant && (
+          <div className="dropdown dropdown-top">
             <button
+              tabIndex={0}
               type="button"
-              onClick={() => inputRef.current?.click()}
-              className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+              className={`rounded-full hover:bg-base-200/10 cursor-pointer ${
+                imagePreview && "text-accent"
+              }`}
             >
-              <Image className="text-accent" />
-              Image File
+              <Paperclip size={24} />
             </button>
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
             >
-              <Video className="text-secondary" />
-              Video File
-            </button>
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
-            >
-              <File className="text-primary" />
-              Normal File
-            </button>
-          </ul>
-        </div>
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+              >
+                <Image className="text-accent" />
+                Image File
+              </button>
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+              >
+                <Video className="text-secondary" />
+                Video File
+              </button>
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="inline-flex gap-2 items-center cursor-pointer h-10 hover:bg-base-300 p-1"
+              >
+                <File className="text-primary" />
+                Normal File
+              </button>
+            </ul>
+          </div>
+        )}
+
         <input
           type="text"
           value={message}

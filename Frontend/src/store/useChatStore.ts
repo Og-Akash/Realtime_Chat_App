@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { User } from "../../types/userType";
 import { Message } from "../../types/messageType";
 import { useAuthStore } from "./useAuthStore";
+import { NavigationType, useSidebarStore } from "./useSidebarStore";
 
 interface ChatStore {
   selectedUser: User | null;
@@ -15,13 +16,20 @@ interface ChatStore {
   sendMessage: (message: FormData) => Promise<any>;
   subscribeToMessages: () => void;
   unSubscribeToMessages: () => void;
+  getUserByQuery: (query: string) => Promise<any>;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   selectedUser: null,
   messages: [],
   users: [],
-  setSelectedUser: (selectedUser: User) => set({ selectedUser }),
+  setSelectedUser: (selectedUser: User) => {
+    const { navigation } = useSidebarStore.getState();
+    if (navigation === NavigationType.Assiestant && selectedUser) {
+      useSidebarStore.setState({ navigation: NavigationType.Contacts });
+    }
+    set({ selectedUser });
+  },
   clearSelectedUser: () => set({ selectedUser: null }),
   getUser: async () => {
     const res = await axiosInstance.get("/messages/users");
@@ -65,4 +73,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       socket.off("newMessage");
     }
   },
+
+  getUserByQuery: (query) =>
+    axiosInstance.get(`/user/v1/search/${query}`),
 }));

@@ -32,6 +32,8 @@ import {
 import { sendMail } from "../utils/sendMail";
 import cloudinary from "../config/cloudinary";
 import { Multer } from "multer";
+import { changeUserPasswordSchema } from "../schemas/auth.schema";
+import { Request } from "express";
 
 export interface createAccountParams {
   username: string;
@@ -50,6 +52,10 @@ export interface loginParams {
 export interface ResetPassword {
   password: string;
   code: string;
+}
+export interface ChangePassword {
+  oldPassword: string;
+  newPassword: string;
 }
 
 export const createAccount = async (data: createAccountParams) => {
@@ -81,7 +87,7 @@ export const createAccount = async (data: createAccountParams) => {
     ...getVerifyEmailTemplate(url),
   });
 
-  appAssert(!error,INTERNAL_SERVER_ERROR, "failed to send email")
+  appAssert(!error, INTERNAL_SERVER_ERROR, "failed to send email");
 
   if (error) {
     console.log(`Email sending Error: `, error);
@@ -297,7 +303,24 @@ export const resetPassword = async ({ password, code }: ResetPassword) => {
   };
 };
 
-export const updateUser = async (file:any,bio:string = "") => {
+export const changePassword = async (
+  request:Request,
+  { oldPassword, newPassword }: ChangePassword
+) => {
+  console.log({ oldPassword, newPassword });
+
+  const currentUser = await userModel.findById(request.userId);
+
+  const matchedUser = await currentUser?.comparePassword(oldPassword)
+
+  appAssert(matchedUser, NOT_FOUND, "please enter the correct password");
+
+  await currentUser?.updateOne({
+    password: await hashValue(newPassword),
+  });
+};
+
+export const updateUser = async (file: any, bio: string = "") => {
   let updatedUserData: { image?: string; bio?: string } = {};
 
   if (file) {
@@ -328,5 +351,5 @@ export const updateUser = async (file:any,bio:string = "") => {
     BAD_REQUEST,
     "No user details provided for update"
   );
-  return updatedUserData
-}
+  return updatedUserData;
+};

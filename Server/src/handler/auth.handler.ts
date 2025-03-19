@@ -10,8 +10,10 @@ import {
   sendPasswordResetEmail,
   verifyEmailByCode,
   updateUser,
+  changePassword,
 } from "../services/auth.services";
 import {
+  changeUserPasswordSchema,
   emailSchema,
   LoginSchema,
   RegisterSchema,
@@ -148,6 +150,18 @@ const resetUserPassword = asyncHandler(async (req, res, next) => {
   //* send the response
 });
 
+const changeUserPassword = asyncHandler(async (req, res, next) =>{
+  const parsedData = changeUserPasswordSchema.parse(req.body)
+
+    appAssert(parsedData.oldPassword !== parsedData.newPassword, BAD_REQUEST, "old and new password are same")
+
+  await changePassword(req,parsedData)
+
+  clearAuthCookies(res).json({
+    message: "Your password changed Successfully"
+  })
+})
+
 const updateUserDetails = asyncHandler(async (req, res, next) => {
   //* get the user details from the request
   const file = req.file;
@@ -178,5 +192,6 @@ export {
   verifyEmail,
   forgetUserPassword,
   resetUserPassword,
+  changeUserPassword,
   updateUserDetails,
 };
