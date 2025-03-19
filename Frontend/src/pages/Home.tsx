@@ -23,12 +23,13 @@ const Home = () => {
       <div className="max-w-6xl mx-auto p-1 md:p-4 rounded-md space-y-4 h-full">
         <div className="flex justify-center items-center h-full relative">
           {/* Show Sidebar in full width when no user is selected on mobile */}
-          {!selectedUser || !isMobile ? (
-            <>
-              <SideNavbar />
-              <Sidebar />
-            </>
-          ) : null}
+          {(!isMobile || navigation !== NavigationType.Assiestant) &&
+            (!selectedUser || !isMobile) && (
+              <>
+                <SideNavbar />
+                <Sidebar />
+              </>
+            )}
 
           {/* Show ChatContainer only when user is selected */}
           {selectedUser && <ChatContainer />}

@@ -24,14 +24,15 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   setSelectedUser: (selectedUser: User) => set({ selectedUser }),
   clearSelectedUser: () => set({ selectedUser: null }),
   getUser: async () => {
-   const res = await axiosInstance.get("/messages/users")
-   set({users: res})
-   return res
+    const res = await axiosInstance.get("/messages/users");
+    set({ users: res });
+    return res;
   },
 
   getMessages: async (userId: string) => {
     const res = await axiosInstance.get(`/messages/${userId}`);
     set({ messages: res });
+    return res;
   },
   sendMessage: async (message) => {
     const { selectedUser } = get();
@@ -52,7 +53,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     const socket = useAuthStore.getState().socket;
     socket?.on("newMessage", (newMessage) => {
-
       set({
         messages: [...get().messages, newMessage],
       });

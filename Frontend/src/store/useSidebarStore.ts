@@ -1,17 +1,30 @@
 import { create } from "zustand";
 
 export enum NavigationType {
-    Contacts = "contacts",
-    Search = "search",
-    Assiestant = "assiestant",
+  Contacts = "contacts",
+  Search = "search",
+  Assiestant = "assiestant",
+}
+export enum FilterType {
+  Online = "online",
+  Contacts = "contacts",
+  NotContacts = "notcontacts",
+  Groups = "groups",
 }
 
 type SidebarTypes = {
-    navigation: NavigationType;
-    setNavigation: (navigation: NavigationType) => void;
-}
+  navigation: NavigationType;
+  currentFilter: FilterType | null;
+  setNavigation: (navigation: NavigationType) => void;
+  setFilter: (filterOption: FilterType) => void;
+};
 
-export const useSidebarStore = create<SidebarTypes>((set) => ({
-    navigation: NavigationType.Contacts,
-    setNavigation: (navigation: NavigationType) => set({navigation}),
-}))
+export const useSidebarStore = create<SidebarTypes>((set,get) => ({
+  navigation: NavigationType.Contacts,
+  currentFilter: null,
+  setNavigation: (navigation: NavigationType) => set({ navigation }),
+  setFilter: (filterOption: FilterType) =>
+    set({
+      currentFilter: filterOption === get().currentFilter ? null : filterOption,
+    }),
+}));

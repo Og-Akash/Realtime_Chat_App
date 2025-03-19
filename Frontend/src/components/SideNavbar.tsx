@@ -92,21 +92,21 @@ const SideNavbar = () => {
           >
             <Link
               to="/profile"
-              className="hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
+              className="hover:bg-accent-content p-2 text-base hover:text-base-200 rounded-md inline-flex items-center gap-2"
             >
               <UserRound size={14} className="text-accent" />
               Profile
             </Link>
             <Link
               to="/setting"
-              className="hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
+              className="hover:bg-accent-content p-2 text-base hover:text-base-200 rounded-md inline-flex items-center gap-2"
             >
               <Settings size={14} className="text-accent" />
               Setting
             </Link>
             <button
               onClick={() => mutate()}
-              className="cursor-pointer hover:bg-accent-content p-2 text-base rounded-md inline-flex items-center gap-2"
+              className="cursor-pointer hover:bg-accent-content p-2 text-base hover:text-base-200 rounded-md inline-flex items-center gap-2"
             >
               <LogOut size={14} className="text-accent" />
               Logout

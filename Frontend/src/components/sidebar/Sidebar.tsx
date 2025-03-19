@@ -9,13 +9,12 @@ import SidebarActions from "../SidebarActions";
 import ContactList from "./ContactList";
 import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
 import SearchContacts from "./SearchContacts";
-import Assiestant from "./Assiestant";
 
 const Sidebar = () => {
   const { getUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
-  const [isShowOnlyOnline] = useState(false);
-  const { navigation, setNavigation } = useSidebarStore();
+  const {currentFilter} = useSidebarStore();
+  const { navigation } = useSidebarStore();
 
   const { data: users, isPending } = useQuery({
     queryKey: ["users"],
@@ -26,7 +25,7 @@ const Sidebar = () => {
     return <SidebarSceleton />;
   }
 
-  const filteredUsers = isShowOnlyOnline
+  const filteredUsers = currentFilter
     ? users.filter((user: any) => onlineUsers?.includes(user._id))
     : users;
 
@@ -58,23 +57,27 @@ const Sidebar = () => {
 
       {/* all users listed here */}
 
-      <div className="overflow-y-auto p-1 lg:p-3 w-full custom-scrollbar">
+      <div className="overflow-hidden p-1 lg:p-3 w-full h-full custom-scrollbar">
         {/* Add Users for DM */}
 
         <SidebarActions />
 
         {filteredUsers?.length === 0 && (
-          <span className="text-accent font-medium">
+          <div className="text-accent font-medium">
             No Online Users to Chat
-          </span>
-        )}
-        {(navigation === NavigationType.Contacts || navigation === NavigationType.Assiestant) && filteredUsers?.map((user: User) => (
-          <ContactList key={user._id} user={user} />
-        ))}
-        {navigation === "search" && (
-         <SearchContacts />
+          </div>
         )}
 
+        {(navigation === NavigationType.Contacts ||
+          navigation === NavigationType.Assiestant) && (
+          <div className="overflow-y-auto h-full custom-scrollbar">
+            {filteredUsers?.map((user: User) => (
+              <ContactList key={user._id} user={user} />
+            ))}
+          </div>
+        )}
+
+        {navigation === "search" && <SearchContacts />}
       </div>
     </aside>
   );

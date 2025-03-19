@@ -1,4 +1,5 @@
 import { useChatStore } from "@/store/useChatStore";
+import { FilterType, useSidebarStore } from "@/store/useSidebarStore";
 import {
   ArrowDownWideNarrow,
   CheckCircle2Icon,
@@ -11,6 +12,8 @@ import {
 import { useRef, useState } from "react";
 
 const SidebarActions = () => {
+  const {setFilter,currentFilter} = useSidebarStore()
+
   return (
     <div className="w-full h-8 flex justify-end items-center gap-3">
       <ConverSationModal />
@@ -26,7 +29,7 @@ const SidebarActions = () => {
           tabIndex={0}
           className="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
         >
-          <button className="cursor-pointer hover:bg-accent-content hover:text-accent p-2 text-base rounded-md inline-flex items-center gap-2">
+          <button onClick={() => setFilter(FilterType.Online)} className={`${currentFilter === FilterType.Online && "bg-accent/40"} cursor-pointer hover:bg-accent-content hover:text-accent p-2 text-base rounded-md inline-flex items-center gap-2`}>
             <CheckCircle2Icon size={16} className="text-accent" />
             online
           </button>
@@ -97,7 +100,7 @@ function ConverSationModal() {
 
           {/* All the contacts */}
 
-          <div className="w-full mt-5 max-h-sm overflow-y-auto">
+          <div className="w-full mt-5 max-h-72 overflow-y-auto">
             {filteredUsers.map((user) => (
               <button
                 key={user._id}

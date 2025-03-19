@@ -4,7 +4,8 @@ import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageLoader from "../ui/MessageLoader";
 import Message from "./Message";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import ContextMenu from "../ui/ContextMenu";
 
 const ChatContainer = () => {
   const {
@@ -15,6 +16,13 @@ const ChatContainer = () => {
     unSubscribeToMessages,
   } = useChatStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    type: string;
+  } | null>(null);
+
+  const [clickImageUrl, setClickedImageUrl] = useState("");
 
   const { isPending } = useQuery({
     queryKey: ["messages", selectedUser?._id],
@@ -22,6 +30,7 @@ const ChatContainer = () => {
     staleTime: 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    enabled: Boolean(selectedUser?._id),
   });
 
   useEffect(() => {
@@ -31,9 +40,35 @@ const ChatContainer = () => {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
-  });
+  }, []);
+
+  const handlePositionContextMenu = (e: MouseEvent) => {
+    e.preventDefault();
+
+    let type = "text";
+
+    if (!chatContainerRef.current) return;
+
+    const { left, top } = chatContainerRef.current.getBoundingClientRect();
+
+    if (e.target instanceof HTMLImageElement) {
+      type = "image";
+      setClickedImageUrl(e.target.src);
+    }
+
+    setContextMenu({
+      x: e.clientX - left,
+      y: e.clientY - top,
+      type,
+    });
+  };
+
+  useEffect(() => {
+    console.log(clickImageUrl)
+  },[clickImageUrl])
 
   return (
     <div className="flex flex-1 flex-col overflow-auto h-full">
@@ -47,7 +82,14 @@ const ChatContainer = () => {
           <MessageLoader />
         ) : (
           messages?.map((message: any) => (
-            <Message key={message._id} message={message} />
+            <Message
+              clickImageUrl={clickImageUrl}
+              contextMenu={contextMenu}
+              setContextMenu={setContextMenu}
+              onContextMenu={handlePositionContextMenu}
+              key={message._id}
+              message={message}
+            />
           ))
         )}
       </div>
