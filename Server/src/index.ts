@@ -12,7 +12,7 @@ import { app, server } from "./utils/socket";
 import path from "node:path";
 
 const port = PORT || 3000;
-const __dirname = path.resolve();
+const currentDir = path.resolve();
 
 //? middlewares
 app.use(express.json());
@@ -41,10 +41,10 @@ app.use("/api", routes);
 app.use(errorHandler);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+  app.use(express.static(path.join(currentDir, "../Frontend/dist")));
 
   app.get("*", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "../Frontend", "dist", "index.html"));
+    res.sendFile(path.join(currentDir, "../Frontend", "dist", "index.html"));
   });
 }
 
