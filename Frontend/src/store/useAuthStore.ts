@@ -100,6 +100,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           [userId]: lastSeen,
         },
       }));
+      // const { authUser } = useAuthStore.getState();
+      // authUser.lastSeen = lastSeen;
     });
   },
   disconnectSocket: () => {

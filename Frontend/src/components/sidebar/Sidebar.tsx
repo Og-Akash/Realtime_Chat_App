@@ -4,7 +4,6 @@ import SidebarSceleton from "../ui/SidebarSceleton";
 import { Users } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { User } from "../../../types/userType";
-import { useState } from "react";
 import SidebarActions from "../SidebarActions";
 import ContactList from "./ContactList";
 import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
@@ -19,6 +18,7 @@ const Sidebar = () => {
   const { data: users, isPending } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUser(),
+    staleTime: 60 * 1000,
   });
 
   if (isPending) {
@@ -26,7 +26,7 @@ const Sidebar = () => {
   }
 
   const filteredUsers = currentFilter
-    ? users.filter((user: any) => onlineUsers?.includes(user._id))
+  ? users.filter((user: any) => onlineUsers?.includes(user._id))
     : users;
 
   return (

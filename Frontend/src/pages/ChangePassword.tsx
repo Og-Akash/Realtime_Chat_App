@@ -92,7 +92,7 @@ const ChangePassword = () => {
                   },
                   validate: (value) =>
                     value !== watch("oldPassword") ||
-                    "Both New Password and Old Password must be Different",
+                    "New Password and Old Password must be Different",
                 })}
               />
             </div>

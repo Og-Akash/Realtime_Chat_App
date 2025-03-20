@@ -1,31 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 @import "tailwindcss";
 @plugin "daisyui" {
-    themes: all;
+  themes: all;
+}
+
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+@layer utilities {
+
+  /* Scrollbar Styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    /* Adjust scrollbar width */
   }
 
-  @layer utilities {
-    /* Scrollbar Styling */
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 8px; /* Adjust scrollbar width */
-    }
-  
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: var(--b1); /* Dark background */
-      border-radius: 10px;
-    }
-  
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: var(--bc); /* Scrollbar thumb color */
-      border-radius: 10px;
-    }
-  
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: var(--a); /* Hover effect */
-    }
-  
-    /* Firefox scrollbar */
-    .custom-scrollbar {
-      scrollbar-width: thin;
-      scrollbar-color: var(--bc) var(--b1);
-    }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--b1);
+    /* Dark background */
+    border-radius: 10px;
   }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--bc);
+    /* Scrollbar thumb color */
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--a);
+    /* Hover effect */
+  }
+
+  /* Firefox scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bc) var(--b1);
+  }
+}

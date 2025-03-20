@@ -7,26 +7,23 @@ import { useAuthStore } from "@/store/useAuthStore";
 import {
   Eye,
   EyeClosed,
+  LoaderCircle,
   Lock,
   Mail,
   MessageCircleCode,
   User,
 } from "lucide-react";
-import { fileToBase64 } from "@/lib/base64Image";
 import Loader from "@/components/ui/Loader";
+
 export interface RegisterFormData {
   username: string;
   email: string;
   password: string;
-  image: File;
 }
 
 const Register = () => {
-  const { authUser, signUp, uploadImage, checkAuth, isCheckingAuth } =
-    useAuthStore();
+  const { authUser, signUp, checkAuth, isCheckingAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
 
@@ -40,50 +37,64 @@ const Register = () => {
     formState: { errors },
   } = useForm<RegisterFormData>();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append("image", file);
-      // console.log("image", formData);
+  // const { mutateAsync: uploadImageMutation, isPending: isUploading } =
+  //   useMutation({
+  //     mutationFn: async (file: File) => {
+  //       const formData = new FormData();
+  //       formData.append("image", file);
+  //       return await uploadImage(formData);
+  //     },
+  //     onError: (error: Error) => {
+  //       toast.error(error.message || "Image upload failed!");
+  //     },
+  //   });
 
-      return await uploadImage(formData);
+  const { mutateAsync: signUpMutation, isPending: isSigningUp } = useMutation({
+    mutationFn: async (userData: RegisterFormData) => {
+      return await signUp(userData);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Registration failed!");
+    },
+    onSuccess: () => {
+      toast.success("Registration Successful! You can now login.");
+      navigate("/");
     },
   });
 
   if (authUser) return <Navigate to="/" />;
 
-  const onSubmit = (data: RegisterFormData) => {
-    if (!imageFile) {
-      toast.error("Please select an image");
-      return;
-    }
-
-    mutate(imageFile, {
-      onSuccess: (imageUrl) => {
-        signUp({ ...data, image: imageUrl || "" });
-        navigate("/");
-      },
-    });
+  const onSubmit = async (data: RegisterFormData) => {
+    await signUpMutation(data);
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // const handleFileChange = async (
+  //   imageFile?: File,
+  //   e?: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   let file = null;
 
-    if (!file) return;
+  //   if (imageFile) {
+  //     file = imageFile;
+  //   } else {
+  //     file = e?.target.files?.[0] as File;
+  //   }
 
-    console.log("Selected file:", file);
+  //   if (!file) return;
 
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      toast.error(`Max image size is 5MB`);
-      return;
-    }
+  //   console.log("Selected file:", file);
 
-    setImageFile(file);
+  //   const maxSize = 5 * 1024 * 1024;
+  //   if (file.size > maxSize) {
+  //     toast.error(`Max image size is 5MB`);
+  //     return;
+  //   }
 
-    const image = await fileToBase64(file);
-    setPreviewImage(image);
-  };
+  //   setImageFile(file);
+
+  //   const image = await fileToBase64(file);
+  //   setPreviewImage(image);
+  // };
 
   if (isCheckingAuth) {
     return <Loader />;
@@ -91,17 +102,47 @@ const Register = () => {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      <div className="w-full p-6 sm:p-12 flex justify-center">
-        <div className="max-w-xl flex flex-col space-y-6 items-center">
+      <div className="w-full p-6 sm:p-12 flex justify-center items-center bg-base-300">
+        <div className="max-w-xl flex flex-col space-y-4 items-center">
           <span className="size-16 bg-accent-content flex items-center justify-center rounded-xl">
             <MessageCircleCode size={32} />
           </span>
-          <h1 className="text-2xl font-bold">Sign Up Account</h1>
-          <p className="text-sm text-center">
-            Enter your details to create an account.
-          </p>
+          <div className="text-center flex flex-col items-center">
+            <h1 className="text-2xl sm:text-3xl font-bold text-accent">
+              Create Your Account On LumeChat
+            </h1>
+            <p className="text-sm text-center w-[70%] font-medium">
+              Enter your details to create your first account and Talk with
+              Peoples ❤️‍🔥.
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-96">
+          {/* Social logins */}
+          <div className="w-full grid lg:grid-cols-2 gap-4 max-w-sm">
+            <button className="cursor-pointer border border-accent-content p-2 rounded-md flex items-center justify-center gap-4 h-12">
+              <img
+                src="./assets/images/google.png"
+                alt="Google Icon"
+                width={20}
+                height={20}
+              />
+              <span className="font-medium">Google</span>
+            </button>
+            <button className="cursor-pointer border border-accent-content p-2 rounded-md flex items-center justify-center gap-4 h-12">
+              <img
+                src="./assets/images/github.png"
+                alt="Github Icon"
+                width={20}
+                height={20}
+                className="invert"
+              />
+              <span className="font-medium">Github</span>
+            </button>
+          </div>
+
+          <div className="divider">Or</div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
             <InputField
               label="Username"
               type="text"
@@ -151,36 +192,16 @@ const Register = () => {
               onToggle={() => setShowPassword((prev) => !prev)}
             />
 
-            <div className="form-control">
-              <label className="fieldset-label font-medium">
-                Profile Image
-              </label>
-              {/* <ImageDropzone<RegisterFormData>
-                onImageUpload={(file) => handleFileChange(file)}
-                register={register}
-                name="image"
-                error={errors.image?.message}
-              />
-              {isPending && <span>Image is uploadng...</span>} */}
-              <input
-                type="file"
-                className="file-input file-input-success w-full"
-                {...register("image", { required: "Image is required" })}
-                onChange={handleFileChange}
-              />
-
-              {isPending && <p>Uploading image...</p>}
-            </div>
-
-            {previewImage && (
-              <img
-                src={previewImage}
-                alt="Profile Preview"
-                className="mt-2 rounded"
-              />
-            )}
-
-            <button className="btn btn-accent w-full">Create Account</button>
+            <button
+              disabled={isSigningUp}
+              className="btn btn-accent w-full rounded-lg"
+            >
+              {isSigningUp ? (
+                <LoaderCircle className="animate-spin" size={16} />
+              ) : (
+                " Create Account"
+              )}
+            </button>
           </form>
 
           <div className="text-center">
@@ -190,6 +211,13 @@ const Register = () => {
             </Link>
           </div>
         </div>
+      </div>
+      <div className="w-full h-full hidden lg:block">
+        <img
+          src="/assets/images/authImage.svg"
+          alt="authImage"
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
   );
@@ -216,7 +244,7 @@ const InputField = ({
       <input
         type={type}
         placeholder={placeholder}
-        className="input input-success w-full pl-10"
+        className="input input-success w-full pl-10 rounded-lg"
         {...register}
       />
       {toggleIcon && (

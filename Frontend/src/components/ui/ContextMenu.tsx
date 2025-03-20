@@ -1,4 +1,4 @@
-import { Copy, Edit, FileDown, Fullscreen, Trash } from "lucide-react";
+import { Copy, Edit, Fullscreen, ImageDown, Trash } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 type ContextMenuProps = {
@@ -39,7 +39,7 @@ const ContextMenu = ({
       <ul className="menu menu-sm bg-base-100 rounded-lg border-2 border-gray-900/40 w-52">
         <li>
           <button className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent">
-            <Trash size={16} />
+            <Trash size={18} />
             Delete
           </button>
         </li>
@@ -50,13 +50,13 @@ const ContextMenu = ({
                 onClick={onDownloadImage}
                 className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent"
               >
-                <FileDown size={16} />
+                <ImageDown size={18} />
                 Download
               </button>
             </li>
             <li>
               <button className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent">
-                <Fullscreen size={16} />
+                <Fullscreen size={18} />
                 View
               </button>
             </li>

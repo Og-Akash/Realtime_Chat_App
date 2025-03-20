@@ -39,7 +39,6 @@ export interface createAccountParams {
   username: string;
   email: string;
   password: string;
-  image: string;
   userAgent?: string;
 }
 export interface loginParams {
@@ -71,7 +70,6 @@ export const createAccount = async (data: createAccountParams) => {
     email: data.email,
     username: data.username,
     password: data.password,
-    image: data.image,
   });
 
   const verificationCode = await Verification.create({
@@ -82,7 +80,7 @@ export const createAccount = async (data: createAccountParams) => {
 
   const url = `${CLIENT_URL}/api/auth/v1/email/verify/${verificationCode._id}`;
 
-  const { error } = await sendMail({
+  const { error} = await sendMail({
     to: user.email,
     ...getVerifyEmailTemplate(url),
   });
@@ -307,17 +305,21 @@ export const changePassword = async (
   request:Request,
   { oldPassword, newPassword }: ChangePassword
 ) => {
-  console.log({ oldPassword, newPassword });
+  console.log({ oldPassword, newPassword }); 
 
   const currentUser = await userModel.findById(request.userId);
 
-  const matchedUser = await currentUser?.comparePassword(oldPassword)
+  const isPassMatched = await currentUser?.comparePassword(oldPassword)
 
-  appAssert(matchedUser, NOT_FOUND, "please enter the correct password");
+  appAssert(isPassMatched, NOT_FOUND, "please enter the correct password");
 
   await currentUser?.updateOne({
     password: await hashValue(newPassword),
   });
+
+  await Session.deleteMany({
+    userId: currentUser?._id
+  })
 };
 
 export const updateUser = async (file: any, bio: string = "") => {

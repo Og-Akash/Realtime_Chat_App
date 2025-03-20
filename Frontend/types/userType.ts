@@ -4,7 +4,8 @@ export interface User {
   email: string;
   image: string;
   createdAt: string;
-  bio:string;
+  bio: string;
+  lastSeen: string;
 }
 
 export interface AuthUser {
@@ -13,5 +14,5 @@ export interface AuthUser {
   email: string;
   image: string;
   createdAt: string;
-  bio:string;
+  bio: string;
 }

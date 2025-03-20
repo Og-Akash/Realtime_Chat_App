@@ -7,6 +7,7 @@ import {
   Lock,
   Mail,
   MessageCircleCode,
+  User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
@@ -62,20 +63,18 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen min-w-screen grid lg:grid-cols-2">
-      {/* Left side */}
-      <div className="w-full space-y-4 p-6 sm:p-12 flex mt-20 justify-center">
-        <div className="w-full max-w-xl flex flex-col space-y-2 gap-3 items-center">
+    <div className="min-h-screen grid lg:grid-cols-2">
+      <div className="w-full p-6 sm:p-12 flex justify-center items-center bg-base-300">
+        <div className="max-w-xl flex flex-col space-y-4 items-center">
           <span className="size-16 bg-accent-content flex items-center justify-center rounded-xl">
             <MessageCircleCode size={32} />
           </span>
-
-          <div className="text-center">
-            <h1 className="text-2xl font-bold leading-tight">
-              Login Into Account
+          <div className="text-center flex flex-col items-center">
+            <h1 className="text-2xl sm:text-3xl font-bold text-accent">
+              Welcome Back To LumeChat 👋
             </h1>
-            <p className="text-sm leading-relaxed">
-              Enter Your Details to login into your Account.
+            <p className="text-sm text-center w-[70%] font-medium">
+              We are very happey that you are back, Now just login and Enjoy
             </p>
           </div>
 
@@ -102,135 +101,74 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Credentials login */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="flex flex-col gap-2 w-96 space-y-4">
-              {/* Username */}
-              <div className="form-control">
-                <label htmlFor="email" className="fieldset-label font-medium">
-                  Username
-                </label>
-                {/* Input Container */}
-                <div className="relative">
-                  <div className="absolute inset-y-0 pl-3 flex items-center pointer-events-none z-10">
-                    <Mail size={16} className="text-base-content/40" />
-                  </div>
-                  <input
-                    id="username"
-                    type="text"
-                    placeholder="John doe"
-                    className="input input-success w-full pl-10"
-                    {...register("username", {
-                      required: "username is required",
-                    })}
-                  />
-                </div>
-                {/* Error message placed outside the relative container */}
-                {errors.username && (
-                  <span className="text-red-500 text-sm mt-1">
-                    {errors.username.message}
-                  </span>
-                )}
-              </div>
-              {/* Email */}
-              <div className="form-control">
-                <label htmlFor="email" className="fieldset-label font-medium">
-                  Email
-                </label>
-                {/* Input Container */}
-                <div className="relative">
-                  <div className="absolute inset-y-0 pl-3 flex items-center pointer-events-none z-10">
-                    <Mail size={16} className="text-base-content/40" />
-                  </div>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="example@email.com"
-                    className="input input-success w-full pl-10"
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                        message: "Email is not valid",
-                      },
-                    })}
-                  />
-                </div>
-                {/* Error message placed outside the relative container */}
-                {errors.email && (
-                  <span className="text-red-500 text-sm mt-1">
-                    {errors.email.message}
-                  </span>
-                )}
-              </div>
+          <div className="divider">Or</div>
 
-              {/* Password */}
-              <div className="form-control">
-                <label
-                  htmlFor="password"
-                  className="fieldset-label font-medium"
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 pl-3 flex items-center pointer-events-none z-2">
-                    <Lock size={16} className="text-base-content/40" />
-                  </div>
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="password123"
-                    className="input input-success w-full px-10"
-                    {...register("password", {
-                      required: "Password is required",
-                      minLength: {
-                        value: 6,
-                        message: "Password must be at least 6 characters",
-                      },
-                    })}
-                  />
-                  <button
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    type="button"
-                    className="cursor-pointer absolute inset-y-0 right-0 pr-3 flex items-center"
-                  >
-                    {showPassword ? (
-                      <EyeClosed size={16} className="text-base-content/40" />
-                    ) : (
-                      <Eye size={16} className="text-base-content/40" />
-                    )}
-                  </button>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
+            <InputField
+              label="Username"
+              type="text"
+              icon={<User size={16} />}
+              placeholder="John Doe"
+              register={register("username", {
+                required: "Username is required",
+                minLength: {
+                  value: 8,
+                  message: "Username must be at least 8 characters",
+                },
+              })}
+              error={errors.username?.message}
+            />
+
+            <InputField
+              label="Email"
+              type="email"
+              icon={<Mail size={16} />}
+              placeholder="example@email.com"
+              register={register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                  message: "Invalid email",
+                },
+              })}
+              error={errors.email?.message}
+            />
+
+            <InputField
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              icon={<Lock size={16} />}
+              placeholder="password123"
+              register={register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              error={errors.password?.message}
+              toggleIcon={
+                showPassword ? <EyeClosed size={16} /> : <Eye size={16} />
+              }
+              onToggle={() => setShowPassword((prev) => !prev)}
+            />
+
+            <button
+              disabled={isPending}
+              className="btn btn-accent w-full rounded-lg"
+            >
+              {isPending ? (
+                <div className="inline-flex gap-3 items-center">
+                  <LoaderCircle className="animate-spin" size={16} />
+                  Login Into Your Account...
                 </div>
-                {errors.password && (
-                  <span className="text-red-500 text-sm">
-                    {errors.password.message}
-                  </span>
-                )}
-              </div>
-
-              <Link
-                to="/password/forgot"
-                className="leading-0 block text-right cursor-pointer hover:text-gray-300 transition-all"
-              >
-                Forget Password?
-              </Link>
-
-              <div>
-                <button
-                  disabled={isPending}
-                  type="submit"
-                  className="btn btn-accent w-full text-base-100"
-                >
-                  {isPending ? (
-                    <LoaderCircle className="animate-spin" size={16} />
-                  ) : (
-                    "Login Account"
-                  )}
-                </button>
-              </div>
-            </div>
+              ) : (
+                "Login Into Your Account"
+              )}
+            </button>
           </form>
-          <div className="flex items-center">
+
+          <div className="text-center">
             <span>Don't have an account? </span>
             <Link to="/register" className="btn btn-link text-amber-50">
               Register
@@ -238,11 +176,53 @@ const Login = () => {
           </div>
         </div>
       </div>
-
-      {/* Right side */}
-      {/* You can add your right side content or image here */}
+      <div className="w-full h-full hidden lg:block">
+        <img
+          src="/assets/images/authImage.svg"
+          alt="authImage"
+          className="w-full h-full object-cover"
+        />
+      </div>
     </div>
   );
 };
+
+const InputField = ({
+  label,
+  type,
+  icon,
+  placeholder,
+  register,
+  error,
+  toggleIcon,
+  onToggle,
+}: any) => (
+  <div className="form-control">
+    <label className="fieldset-label font-medium">{label}</label>
+    <div className="relative">
+      {icon && (
+        <div className="absolute inset-y-0 pl-3 flex items-center pointer-events-none z-10">
+          <span className="text-base-content/40">{icon}</span>
+        </div>
+      )}
+      <input
+        type={type}
+        placeholder={placeholder}
+        className="input input-success w-full pl-10 rounded-lg"
+        {...register}
+      />
+      {toggleIcon && (
+        <button
+          type="button"
+          className="absolute inset-y-0 right-3 flex items-center"
+          onClick={onToggle}
+        >
+          {toggleIcon}
+        </button>
+      )}
+    </div>
+    {error && <span className="text-red-500 text-sm">{error}</span>}
+  </div>
+);
 
 export default Login;

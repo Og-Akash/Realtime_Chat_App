@@ -23,7 +23,7 @@ const ChatHeader = () => {
             {selectedUser?.username}
           </span>
           <div className="text-sm text-zinc-300">
-            {onlineUsers?.includes(selectedUser?._id as any) ? "online" :lastSeen[selectedUser?._id as any] ?  "Last Seen " + formatDate(lastSeen[selectedUser?._id as any]) : "offline"}
+            {onlineUsers?.includes(selectedUser?._id as any) ? "online" : selectedUser?.lastSeen || lastSeen[selectedUser?._id as any] ?  "Last Seen " + selectedUser?.lastSeen : "offline"}
           </div>
         </div>
       </div>

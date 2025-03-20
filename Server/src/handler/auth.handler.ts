@@ -40,22 +40,22 @@ const register = asyncHandler(async (req, res) => {
   //? call the auth service
   const { user, accessToken, refreshToken } = await createAccount(parsedData);
 
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/api/auth/v1/refresh",
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-  });
-
-  res.status(CREATED).json({ message: "User Registration Success", user });
+  res
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth/v1/refresh",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+    })
+    .status(CREATED)
+    .json({ message: "User Registration Success", user });
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -150,17 +150,21 @@ const resetUserPassword = asyncHandler(async (req, res, next) => {
   //* send the response
 });
 
-const changeUserPassword = asyncHandler(async (req, res, next) =>{
-  const parsedData = changeUserPasswordSchema.parse(req.body)
+const changeUserPassword = asyncHandler(async (req, res, next) => {
+  const parsedData = changeUserPasswordSchema.parse(req.body);
 
-    appAssert(parsedData.oldPassword !== parsedData.newPassword, BAD_REQUEST, "old and new password are same")
+  appAssert(
+    parsedData.oldPassword !== parsedData.newPassword,
+    BAD_REQUEST,
+    "old and new password are same"
+  );
 
-  await changePassword(req,parsedData)
+  await changePassword(req, parsedData);
 
   clearAuthCookies(res).json({
-    message: "Your password changed Successfully"
-  })
-})
+    message: "Your password changed Successfully",
+  });
+});
 
 const updateUserDetails = asyncHandler(async (req, res, next) => {
   //* get the user details from the request

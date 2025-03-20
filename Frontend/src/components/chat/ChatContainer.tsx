@@ -5,7 +5,6 @@ import MessageInput from "./MessageInput";
 import MessageLoader from "../ui/MessageLoader";
 import Message from "./Message";
 import { useEffect, useRef, useState } from "react";
-import ContextMenu from "../ui/ContextMenu";
 
 const ChatContainer = () => {
   const {
@@ -39,11 +38,18 @@ const ChatContainer = () => {
   }, [subscribeToMessages, unSubscribeToMessages]);
 
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
-  }, []);
+    const scrollToBottom = () => {
+      const chatContainer = chatContainerRef.current;
+      if (chatContainer) {
+        // Force this to run after DOM updates
+        setTimeout(() => {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 100);
+      }
+    };
+    
+    scrollToBottom();
+  }, [messages]);
 
   const handlePositionContextMenu = (e: MouseEvent) => {
     e.preventDefault();
@@ -67,8 +73,8 @@ const ChatContainer = () => {
   };
 
   useEffect(() => {
-    console.log(clickImageUrl)
-  },[clickImageUrl])
+    console.log(clickImageUrl);
+  }, [clickImageUrl]);
 
   return (
     <div className="flex flex-1 flex-col overflow-auto h-full">
@@ -76,7 +82,7 @@ const ChatContainer = () => {
 
       <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar"
+        className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar h-full scroll-smooth"
       >
         {isPending ? (
           <MessageLoader />

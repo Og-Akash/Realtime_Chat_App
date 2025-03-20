@@ -9,6 +9,7 @@ const Message = ({
   contextMenu,
   setContextMenu,
   clickImageUrl,
+  ...props
 }: any) => {
   const { selectedUser } = useChatStore();
   const { authUser } = useAuthStore();
@@ -37,6 +38,7 @@ const Message = ({
 
   return (
     <div
+      {...props}
       className={`chat ${
         message.senderId === authUser?._id ? "chat-end" : "chat-start"
       }`}
@@ -44,8 +46,7 @@ const Message = ({
       {contextMenu && (
         <ContextMenu
           onDownloadImage={handleDownloadImage}
-          onCopy={() => console.log("copied")
-          }
+          onCopy={() => console.log("copied")}
           x={contextMenu.x}
           y={contextMenu.y}
           type={contextMenu.type}

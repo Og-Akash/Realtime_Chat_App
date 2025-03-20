@@ -13,8 +13,11 @@ export const LoginSchema = z.object({
   userAgent: z.string().optional(),
 });
 
-export const RegisterSchema = LoginSchema.extend({
-  image: z.string(),
+export const RegisterSchema = z.object({
+  username: z.string().min(3).max(20),
+  email: z.string().email(),
+  password: passwordSchema,
+  userAgent: z.string().optional(),
 });
 
 export const resetPasswordSchema = z.object({

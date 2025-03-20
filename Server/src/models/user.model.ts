@@ -24,7 +24,11 @@ const userSchema = new Schema<IUser>(
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    image: { type: String, required: true },
+    image: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/duicdshi7/image/upload/f_auto,q_auto/v1/chat-app/xngxcjzjkgto8rxigl3i",
+    },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     bio: {
       type: String,
