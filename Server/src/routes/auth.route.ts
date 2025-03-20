@@ -3,6 +3,8 @@ import {
   login,
   logout,
   register,
+  googleAuth,
+  googleCallback,
   refreshAccessToken,
   verifyEmail,
   forgetUserPassword,
@@ -16,6 +18,8 @@ import verifyJWT from "../middleware/auth.middleware";
 const route = express.Router();
 
 route.post("/register", register);
+route.get("/google", googleAuth);
+route.get("/google/callback", googleCallback);
 route.post("/login", login);
 route.get("/logout", logout);
 route.get("/refresh", refreshAccessToken);

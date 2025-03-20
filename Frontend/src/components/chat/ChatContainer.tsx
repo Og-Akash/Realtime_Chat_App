@@ -26,9 +26,6 @@ const ChatContainer = () => {
   const { isPending } = useQuery({
     queryKey: ["messages", selectedUser?._id],
     queryFn: () => getMessages(selectedUser?._id as string),
-    staleTime: 60 * 1000,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
     enabled: Boolean(selectedUser?._id),
   });
 

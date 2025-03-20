@@ -2,15 +2,16 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
 import { useMutation } from "@tanstack/react-query";
 import {
+  Search,
   Brain,
   LogOut,
-  Search,
   Settings,
   UserRound,
   UserRoundCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+
 
 const SideNavbar = () => {
   const { logout, authUser } = useAuthStore();

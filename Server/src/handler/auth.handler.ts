@@ -11,6 +11,7 @@ import {
   verifyEmailByCode,
   updateUser,
   changePassword,
+  getPayloadFromToken,
 } from "../services/auth.services";
 import {
   changeUserPasswordSchema,
@@ -30,6 +31,13 @@ import appAssert from "../utils/appAssert";
 import userModel from "../models/user.model";
 import { NODE_ENV } from "../constants/env";
 import { oneDayFromNow, sevenDaysFromNow } from "../utils/date";
+import { OAuth2Client } from "google-auth-library";
+
+const oauth2Client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  `${process.env.BACKEND_URL}/api/auth/v1/google/callback`
+);
 
 const register = asyncHandler(async (req, res) => {
   const parsedData = RegisterSchema.parse({
@@ -56,6 +64,44 @@ const register = asyncHandler(async (req, res) => {
     })
     .status(CREATED)
     .json({ message: "User Registration Success", user });
+});
+
+const googleAuth = asyncHandler(async (req, res) => {
+  //?generate the authURL
+  const authUrl = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ],
+    prompt: "consent", // Force consent screen to always appear
+  });
+
+  res.redirect(authUrl);
+});
+
+const googleCallback = asyncHandler(async (req, res) => {
+  const { accessToken, refreshToken } = await getPayloadFromToken(
+    req,
+    oauth2Client
+  );
+
+  res
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth/v1/refresh",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+    });
+
+  res.redirect(`${process.env.CLIENT_URL}`);
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -190,6 +236,8 @@ const updateUserDetails = asyncHandler(async (req, res, next) => {
 
 export {
   register,
+  googleAuth,
+  googleCallback,
   login,
   logout,
   refreshAccessToken,

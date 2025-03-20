@@ -32,8 +32,9 @@ import {
 import { sendMail } from "../utils/sendMail";
 import cloudinary from "../config/cloudinary";
 import { Multer } from "multer";
-import { changeUserPasswordSchema } from "../schemas/auth.schema";
 import { Request } from "express";
+import { OAuth2Client } from "google-auth-library";
+import axios from "axios";
 
 export interface createAccountParams {
   username: string;
@@ -80,7 +81,7 @@ export const createAccount = async (data: createAccountParams) => {
 
   const url = `${CLIENT_URL}/api/auth/v1/email/verify/${verificationCode._id}`;
 
-  const { error} = await sendMail({
+  const { error } = await sendMail({
     to: user.email,
     ...getVerifyEmailTemplate(url),
   });
@@ -110,6 +111,64 @@ export const createAccount = async (data: createAccountParams) => {
   //? return the user and tokens
   return {
     user: user.omitPassword(),
+    accessToken,
+    refreshToken,
+  };
+};
+
+export const getPayloadFromToken = async (
+  req: any,
+  oauth2Client: OAuth2Client
+) => {
+  // Exchange the code for tokens
+  const { tokens } = await oauth2Client.getToken(req.query.code);
+  oauth2Client.setCredentials(tokens);
+
+  // Get user info using the access token
+  const response = await axios.get(
+    "https://www.googleapis.com/oauth2/v3/userinfo",
+    {
+      headers: {
+        Authorization: `Bearer ${tokens.access_token}`,
+      },
+    }
+  );
+
+  const userData = response.data;
+
+  //? check if the user is already stored in the db or not
+  let user = await userModel.findOne({
+    email: userData?.email,
+  });
+
+  if (!user) {
+    //? create a new user
+    user = await userModel.create({
+      email: userData.email,
+      username: userData.name,
+      image: userData.picture,
+      isVerified: true,
+    });
+
+    appAssert(user, BAD_REQUEST, "Failed to Register");
+  }
+
+
+  //? create a session
+  const session = await Session.create({
+    userId: user._id,
+  });
+
+  const sessionInfo = {
+    sessionId: session._id,
+  };
+
+  //* Access token Generate
+  const accessToken = signToken({ userId: user._id, ...sessionInfo });
+  //* Refresh token Generate
+  const refreshToken = signToken(sessionInfo, refreshTokenSignOptions);
+
+  return {
     accessToken,
     refreshToken,
   };
@@ -302,14 +361,14 @@ export const resetPassword = async ({ password, code }: ResetPassword) => {
 };
 
 export const changePassword = async (
-  request:Request,
+  request: Request,
   { oldPassword, newPassword }: ChangePassword
 ) => {
-  console.log({ oldPassword, newPassword }); 
+  console.log({ oldPassword, newPassword });
 
   const currentUser = await userModel.findById(request.userId);
 
-  const isPassMatched = await currentUser?.comparePassword(oldPassword)
+  const isPassMatched = await currentUser?.comparePassword(oldPassword);
 
   appAssert(isPassMatched, NOT_FOUND, "please enter the correct password");
 
@@ -318,8 +377,8 @@ export const changePassword = async (
   });
 
   await Session.deleteMany({
-    userId: currentUser?._id
-  })
+    userId: currentUser?._id,
+  });
 };
 
 export const updateUser = async (file: any, bio: string = "") => {

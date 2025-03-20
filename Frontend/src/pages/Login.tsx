@@ -62,6 +62,16 @@ const Login = () => {
     return <Loader />;
   }
 
+  const handleGoogleLogin = () => {
+    try {
+      window.location.href = `${
+        import.meta.env.VITE_BACKEND_URL
+      }/auth/v1/google`;
+    } catch (error) {
+      console.log("Error in google authentication", error);
+    }
+  };
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       <div className="w-full p-6 sm:p-12 flex justify-center items-center bg-base-300">
@@ -79,17 +89,20 @@ const Login = () => {
           </div>
 
           {/* Social logins */}
-          <div className="w-full grid lg:grid-cols-2 gap-4 max-w-sm">
-            <button className="cursor-pointer border border-accent-content p-2 rounded-md flex items-center justify-center gap-4 h-12">
+          <div className="w-full grid grid-cols-1 gap-4 max-w-sm">
+            <button
+              onClick={handleGoogleLogin}
+              className="cursor-pointer border border-accent/40 p-2 rounded-md flex items-center justify-center gap-4 h-12"
+            >
               <img
                 src="./assets/images/google.png"
                 alt="Google Icon"
-                width={20}
-                height={20}
+                width={24}
+                height={24}
               />
-              <span className="font-medium">Google</span>
+              <span className="font-medium">Continue With Google</span>
             </button>
-            <button className="cursor-pointer border border-accent-content p-2 rounded-md flex items-center justify-center gap-4 h-12">
+            {/* <button className="cursor-pointer border border-accent-content p-2 rounded-md flex items-center justify-center gap-4 h-12">
               <img
                 src="./assets/images/github.png"
                 alt="Github Icon"
@@ -98,7 +111,7 @@ const Login = () => {
                 className="invert"
               />
               <span className="font-medium">Github</span>
-            </button>
+            </button> */}
           </div>
 
           <div className="divider">Or</div>
@@ -208,7 +221,7 @@ const InputField = ({
       <input
         type={type}
         placeholder={placeholder}
-        className="input input-success w-full pl-10 rounded-lg"
+        className="input input-accent w-full pl-10 rounded-lg"
         {...register}
       />
       {toggleIcon && (

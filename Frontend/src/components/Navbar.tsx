@@ -5,7 +5,6 @@ import { User } from "../../types/userType";
 type NavParams = { authUser: User };
 
 const Navbar = ({ authUser }: NavParams) => {
-
   return (
     <>
       <div className="navbar max-w-7xl mx-auto bg-base-100 shadow-sm">
@@ -15,7 +14,7 @@ const Navbar = ({ authUser }: NavParams) => {
             className="bg-accent-content p-2 rounded-md text-accent"
           />
           <Link to="/" className="text-xl font-semibold">
-            Chaty
+            LumeChat
           </Link>
         </div>
         <div className="flex items-center gap-8">
