@@ -1,4 +1,3 @@
-import { formatDate } from "@/lib/formatDate";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useChatStore } from "@/store/useChatStore";
 import { ArrowLeft, Phone, Video } from "lucide-react";

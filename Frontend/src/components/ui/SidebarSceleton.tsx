@@ -1,5 +1,3 @@
-import { Users } from "lucide-react";
-
 const skeletonContacts = Array(10).fill(null);
 
 const SidebarSceleton = () => {

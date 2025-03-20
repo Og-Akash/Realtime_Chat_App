@@ -1,5 +1,3 @@
-import { MessageSquare } from "lucide-react";
-import React from "react";
 import MessageIcon from "../icons/Message";
 
 const NoUserSelected = () => {

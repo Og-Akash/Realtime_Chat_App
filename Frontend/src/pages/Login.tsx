@@ -1,19 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "@/store/useAuthStore";
-import {
-  Eye,
-  EyeClosed,
-  LoaderCircle,
-  Lock,
-  Mail,
-  MessageCircleCode,
-  User,
-} from "lucide-react";
+import { Eye, EyeClosed, LoaderCircle, Lock, Mail, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import Loader from "@/components/ui/Loader";
+import MessageIcon from "@/components/icons/Message";
 
 export interface LoginFormData {
   username: string;
@@ -77,7 +70,7 @@ const Login = () => {
       <div className="w-full p-6 sm:p-12 flex justify-center items-center bg-base-300">
         <div className="max-w-xl flex flex-col space-y-4 items-center">
           <span className="size-16 bg-accent-content flex items-center justify-center rounded-xl">
-            <MessageCircleCode size={32} />
+            <MessageIcon />
           </span>
           <div className="text-center flex flex-col items-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-accent">

@@ -1,6 +1,7 @@
-import { MessageCircleMoreIcon, User2 } from "lucide-react";
+import { User2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { User } from "../../types/userType";
+import MessageIcon from "./icons/Message";
 
 type NavParams = { authUser: User };
 
@@ -9,10 +10,7 @@ const Navbar = ({ authUser }: NavParams) => {
     <>
       <div className="navbar max-w-7xl mx-auto bg-base-100 shadow-sm">
         <div className="flex-1 inline-flex gap-3 items-center cursor-pointer">
-          <MessageCircleMoreIcon
-            size={42}
-            className="bg-accent-content p-2 rounded-md text-accent"
-          />
+          <MessageIcon className="size-10"/>
           <Link to="/" className="text-xl font-semibold">
             LumeChat
           </Link>

@@ -25,6 +25,8 @@ interface AuthState {
   disconnectSocket: () => void; // add socket disconnection logic here
 }
 
+const BASE_URL = import.meta.env.VITE_NODE_ENV === "development" ? import.meta.env.VITE_BACKEND : "/"
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   authUser: null, //{username: "akash", _id: "sdfsdf", email: "akash@gmail.com", image: "shdfhsdhf"},
   isSigningIn: false,
@@ -78,7 +80,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket = io(import.meta.env.VITE_BACKEND, {
+    const socket = io(BASE_URL, {
       query: {
         userId: authUser._id,
       },

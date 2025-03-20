@@ -1,0 +1,13 @@
+{
+  "name": "realtime_chat_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install --prefix Server && npm run build --prefix Server && npm install --force --prefix Frontend && npm run build --prefix Frontend",
+    "start": "npm start --prefix Server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

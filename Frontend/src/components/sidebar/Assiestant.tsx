@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import MessageInput from "../chat/MessageInput";
 import { ArrowLeft } from "lucide-react";
-import { useChatStore } from "@/store/useChatStore";
 import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
 
 const Assiestant = () => {

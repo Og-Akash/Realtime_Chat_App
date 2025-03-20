@@ -10,10 +10,10 @@ import {
   LoaderCircle,
   Lock,
   Mail,
-  MessageCircleCode,
   User,
 } from "lucide-react";
 import Loader from "@/components/ui/Loader";
+import MessageIcon from "@/components/icons/Message";
 
 export interface RegisterFormData {
   username: string;
@@ -114,7 +114,7 @@ const Register = () => {
       <div className="w-full p-6 sm:p-12 flex justify-center items-center bg-base-300">
         <div className="max-w-xl flex flex-col space-y-4 items-center">
           <span className="size-16 bg-accent-content flex items-center justify-center rounded-xl">
-            <MessageCircleCode size={32} />
+          <MessageIcon />
           </span>
           <div className="text-center flex flex-col items-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-accent">
