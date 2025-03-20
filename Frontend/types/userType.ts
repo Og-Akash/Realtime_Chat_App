@@ -15,4 +15,5 @@ export interface AuthUser {
   image: string;
   createdAt: string;
   bio: string;
+  lastSeen: string;
 }

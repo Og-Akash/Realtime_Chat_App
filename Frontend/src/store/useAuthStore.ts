@@ -37,9 +37,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
-      const result = await axiosInstance.get<{ user: AuthUser }>(
-        "/user/v1/getAuthUser"
-      );
+      // Now this works correctly with the proper typing
+      const result = await axiosInstance.get<{ user: AuthUser }>("/user/v1/getAuthUser");
       set({ authUser: result.user });
       get().connectSocket();
     } catch (error) {
@@ -49,7 +48,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isCheckingAuth: false });
     }
   },
-
   uploadImage: async (image) =>
     axiosInstance.post("/upload/media", image, {
       headers: { "Content-Type": "multipart/form-data" },
