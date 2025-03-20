@@ -21,10 +21,7 @@ interface CustomAxiosInstance extends AxiosInstance {
 
 // Define a custom axios instance type
 export const axiosInstance = axios.create({
-  baseURL:
-    import.meta.env.VITE_NODE_ENV === "development"
-      ? import.meta.env.VITE_BACKEND_URL
-      : "/api",
+  baseURL: import.meta.env.VITE_BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
   },
