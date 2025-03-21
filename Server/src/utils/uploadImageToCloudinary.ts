@@ -11,8 +11,8 @@ export const uploadImageToCloudinary = async (req: Request, res: Response) => {
   appAssert(image, INTERNAL_SERVER_ERROR, "No image provided!");
 
   const imageBase64 = `data:${
-    req.file.mimetype
-  };base64,${req.file.buffer.toString("base64")}`;
+    req?.file?.mimetype
+  };base64,${req?.file?.buffer.toString("base64")}`;
 
   //* upload to cloudinary
   const uploadedResponse = await cloudinary.uploader.upload(imageBase64, {

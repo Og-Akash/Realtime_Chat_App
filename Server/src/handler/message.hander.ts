@@ -59,8 +59,8 @@ const sendMessageToUser = asyncHandler(async (req, res) => {
   //* if image is there then upload it and store the url.
   if (image) {
     const imageBase64 = `data:${
-      req.file.mimetype
-    };base64,${req.file.buffer.toString("base64")}`;
+      req?.file?.mimetype
+    };base64,${req?.file?.buffer.toString("base64")}`;
 
     const responseFromCLoudinary = await cloudinary.uploader.upload(
       imageBase64,
