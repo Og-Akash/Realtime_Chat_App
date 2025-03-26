@@ -7,7 +7,7 @@ type ContextMenuProps = {
   type: string;
   onClose: () => void;
   onCopy: () => void;
-  onDownloadImage: () => void;
+  handleDownloadImage: () => void;
 };
 
 const ContextMenu = ({
@@ -16,7 +16,7 @@ const ContextMenu = ({
   type,
   onClose,
   onCopy,
-  onDownloadImage,
+  handleDownloadImage,
 }: ContextMenuProps) => {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -47,7 +47,7 @@ const ContextMenu = ({
           <>
             <li>
               <button
-                onClick={onDownloadImage}
+                onClick={handleDownloadImage}
                 className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent"
               >
                 <ImageDown size={18} />

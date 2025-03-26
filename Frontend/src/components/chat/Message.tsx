@@ -45,7 +45,7 @@ const Message = ({
     >
       {contextMenu && (
         <ContextMenu
-          onDownloadImage={handleDownloadImage}
+        handleDownloadImage={handleDownloadImage}
           onCopy={() => console.log("copied")}
           x={contextMenu.x}
           y={contextMenu.y}

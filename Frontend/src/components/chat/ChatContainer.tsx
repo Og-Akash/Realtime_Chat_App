@@ -69,10 +69,6 @@ const ChatContainer = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(clickImageUrl);
-  }, [clickImageUrl]);
-
   return (
     <div className="flex flex-1 flex-col overflow-auto h-full">
       <ChatHeader />

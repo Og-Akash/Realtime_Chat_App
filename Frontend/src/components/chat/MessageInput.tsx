@@ -4,8 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { File, Image, Paperclip, Send, Smile, Video, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import Picker from "@emoji-mart/react";
-import data from "@emoji-mart/data";
+import EmojiPicker, { Theme, EmojiStyle } from "emoji-picker-react";
 import { useThemeStore } from "@/store/useThemeStore";
 import { NavigationType, useSidebarStore } from "@/store/useSidebarStore";
 
@@ -42,7 +41,7 @@ const MessageInput = () => {
   };
 
   const addEmoji = (emoji: any) => {
-    setMessage((prev) => prev + emoji.native);
+    setMessage((prev) => prev + emoji.emoji);
   };
 
   const { mutate, isPending } = useMutation({
@@ -180,10 +179,10 @@ const MessageInput = () => {
         {/* Emoji Picker */}
         {showPicker && (
           <div ref={emojiRef} className="absolute bottom-12 right-20">
-            <Picker
-              data={data}
-              onEmojiSelect={addEmoji}
-              theme={theme === "light" ? "light" : "dark"}
+            <EmojiPicker
+              onEmojiClick={addEmoji}
+              theme={theme === "light" ? Theme.LIGHT : Theme.DARK}
+              emojiStyle={EmojiStyle.GOOGLE}
             />
           </div>
         )}

@@ -113,7 +113,7 @@ const Register = () => {
     <div className="min-h-screen grid lg:grid-cols-2">
       <div className="w-full p-6 sm:p-12 flex justify-center items-center bg-base-300">
         <div className="max-w-xl flex flex-col space-y-4 items-center">
-          <span className="size-16 bg-accent-content flex items-center justify-center rounded-xl">
+          <span className="size-16 flex items-center justify-center rounded-xl">
           <MessageIcon />
           </span>
           <div className="text-center flex flex-col items-center">
