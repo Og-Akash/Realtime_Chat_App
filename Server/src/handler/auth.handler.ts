@@ -52,13 +52,13 @@ const register = asyncHandler(async (req, res) => {
     .cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
     })
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       path: "/api/auth/v1/refresh",
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     })
@@ -117,14 +117,14 @@ const login = asyncHandler(async (req, res) => {
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: NODE_ENV === "development" ? "strict" : "none",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     expires: oneDayFromNow(),
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: NODE_ENV === "development" ? "strict" : "none",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     path: "/api/auth/v1/refresh",
     expires: sevenDaysFromNow(),
   });
