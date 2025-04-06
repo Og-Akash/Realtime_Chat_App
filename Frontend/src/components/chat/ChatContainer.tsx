@@ -7,6 +7,7 @@ import Message from "./Message";
 import { useEffect, useRef, useState } from "react";
 import ContextMenu from "../ui/ContextMenu";
 import { ErrorToast } from "../shared/Toast";
+import { Download, X } from "lucide-react";
 
 const ChatContainer = () => {
   const {
@@ -25,6 +26,7 @@ const ChatContainer = () => {
 
   const [clickImageUrl, setClickedImageUrl] = useState("");
   const [clickedText, setClickedText] = useState("");
+  const [showImageInView, setShowImageInView] = useState(false);
 
   const { isPending } = useQuery({
     queryKey: ["messages", selectedUser?._id],
@@ -91,17 +93,25 @@ const ChatContainer = () => {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl); // Clean up memory
+      setContextMenu(null);
     } catch (error) {
       console.log("failed to download image", error);
+      setContextMenu(null);
     }
   };
 
   const onCopy = async () => {
     try {
       await navigator.clipboard.writeText(clickedText);
+      setContextMenu(null);
     } catch (error) {
       ErrorToast("failed to Copy text");
+      setContextMenu(null);
     }
+  };
+
+  const handleImageView = () => {
+    setShowImageInView(true);
   };
 
   return (
@@ -129,6 +139,7 @@ const ChatContainer = () => {
 
         {contextMenu && (
           <ContextMenu
+            handleImageView={handleImageView}
             handleDownloadImage={handleDownloadImage}
             onCopy={onCopy}
             x={contextMenu.x}
@@ -136,6 +147,41 @@ const ChatContainer = () => {
             type={contextMenu.type}
             onClose={() => setContextMenu(null)}
           />
+        )}
+
+        {showImageInView && (
+          <div
+            onClick={() => {
+              setShowImageInView(false);
+              setContextMenu(null);
+            }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 overflow-auto my-4"
+          >
+            <div className="bg-dark/90 p-8 rounded-md shadow-lg max-w-2xl w-full relative">
+              <div>
+                <button
+                  onClick={() => {
+                    setShowImageInView(false);
+                    setContextMenu(null);
+                  }}
+                  className="absolute top-2 right-2"
+                >
+                  <X className="text-accent font-extrabold cursor-pointer" />
+                </button>
+                <button
+                  onClick={handleDownloadImage}
+                  className="cursor-pointer inline-flex items-center justify-center border-1 border-gray-500/50 shadow-xl p-2  rounded-full -top-10 right-1/2  absolute"
+                >
+                  <Download size={24} className="text-white" />
+                </button>
+              </div>
+              <img
+                src={clickImageUrl}
+                alt="Preview"
+                className="w-full  max-h-1/2 h-auto rounded"
+              />
+            </div>
+          </div>
         )}
       </div>
 

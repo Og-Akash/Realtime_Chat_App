@@ -8,6 +8,7 @@ type ContextMenuProps = {
   onClose: () => void;
   onCopy: () => void;
   handleDownloadImage: () => void;
+  handleImageView: () => void;
 };
 
 const ContextMenu = ({
@@ -17,8 +18,9 @@ const ContextMenu = ({
   onClose,
   onCopy,
   handleDownloadImage,
+  handleImageView,
 }: ContextMenuProps) => {
-  const menuRef = useRef<HTMLUListElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -32,13 +34,11 @@ const ContextMenu = ({
 
   return (
     <div
-      className="absolute"
+      className="absolute menu menu-sm bg-base-100 rounded-lg border-2 border-gray-900/40 w-52"
       style={{ left: `${x}px`, top: `${y}px`, zIndex: 50 }}
+      ref={menuRef}
     >
-      <ul
-        ref={menuRef}
-        className="menu menu-sm bg-base-100 rounded-lg border-2 border-gray-900/40 w-52"
-      >
+      <ul>
         <li>
           <button
             onClick={() => console.log("Delete clicked")}
@@ -62,7 +62,7 @@ const ContextMenu = ({
             </li>
             <li>
               <button
-                onClick={() => console.log("View clicked")}
+                onClick={handleImageView}
                 className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent"
               >
                 <Fullscreen size={18} />
