@@ -90,13 +90,13 @@ const googleCallback = asyncHandler(async (req, res) => {
     .cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
     })
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       path: "/api/auth/v1/refresh",
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     });
@@ -148,9 +148,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies?.refreshToken;
   appAssert(refreshToken, UNAUTHORIZED, "No refresh token found!");
 
-  const { accessToken, newRefreshToken } = await refreshUserAccessToken(
-    refreshToken
-  );
+  const { accessToken, newRefreshToken } =
+    await refreshUserAccessToken(refreshToken);
 
   if (newRefreshToken) {
     res.cookie("refreshToken", newRefreshToken, getRefreshTokenOption());
