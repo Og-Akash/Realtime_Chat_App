@@ -18,7 +18,7 @@ const ContextMenu = ({
   onCopy,
   handleDownloadImage,
 }: ContextMenuProps) => {
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -32,17 +32,23 @@ const ContextMenu = ({
 
   return (
     <div
-      className={`dropdown dropdown-open absolute z-10`}
-      style={{ left: `${x}px`, top: `${y}px` }}
-      ref={menuRef}
+      className="absolute"
+      style={{ left: `${x}px`, top: `${y}px`, zIndex: 50 }}
     >
-      <ul className="menu menu-sm bg-base-100 rounded-lg border-2 border-gray-900/40 w-52">
+      <ul
+        ref={menuRef}
+        className="menu menu-sm bg-base-100 rounded-lg border-2 border-gray-900/40 w-52"
+      >
         <li>
-          <button className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent">
+          <button
+            onClick={() => console.log("Delete clicked")}
+            className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent"
+          >
             <Trash size={18} />
             Delete
           </button>
         </li>
+
         {type === "image" ? (
           <>
             <li>
@@ -55,7 +61,10 @@ const ContextMenu = ({
               </button>
             </li>
             <li>
-              <button className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent">
+              <button
+                onClick={() => console.log("View clicked")}
+                className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent"
+              >
                 <Fullscreen size={18} />
                 View
               </button>
@@ -64,7 +73,10 @@ const ContextMenu = ({
         ) : (
           <>
             <li>
-              <button className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent">
+              <button
+                onClick={() => console.log("Edit clicked")}
+                className="flex items-center gap-3 h-10 text-base hover:bg-accent-content hover:text-accent"
+              >
                 <Edit size={16} />
                 Edit
               </button>
@@ -84,5 +96,4 @@ const ContextMenu = ({
     </div>
   );
 };
-
 export default ContextMenu;

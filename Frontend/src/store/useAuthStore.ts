@@ -60,12 +60,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   login: async (data: any) => {
     await axiosInstance.post("/auth/v1/login", data);
-    window.location.reload();
+    window.location.replace("/");
     get().connectSocket();
   },
   logout: async () => {
     await axiosInstance.get("/auth/v1/logout");
-    window.location.reload();
+    window.location.replace("/login");
     get().disconnectSocket();
   },
   updateProfile: async (data) =>

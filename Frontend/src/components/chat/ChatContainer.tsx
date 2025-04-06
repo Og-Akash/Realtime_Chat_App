@@ -5,6 +5,8 @@ import MessageInput from "./MessageInput";
 import MessageLoader from "../ui/MessageLoader";
 import Message from "./Message";
 import { useEffect, useRef, useState } from "react";
+import ContextMenu from "../ui/ContextMenu";
+import { ErrorToast } from "../shared/Toast";
 
 const ChatContainer = () => {
   const {
@@ -22,6 +24,7 @@ const ChatContainer = () => {
   } | null>(null);
 
   const [clickImageUrl, setClickedImageUrl] = useState("");
+  const [clickedText, setClickedText] = useState("");
 
   const { isPending } = useQuery({
     queryKey: ["messages", selectedUser?._id],
@@ -44,7 +47,7 @@ const ChatContainer = () => {
         }, 100);
       }
     };
-    
+
     scrollToBottom();
   }, [messages]);
 
@@ -57,6 +60,10 @@ const ChatContainer = () => {
 
     const { left, top } = chatContainerRef.current.getBoundingClientRect();
 
+    if (e.target instanceof HTMLSpanElement) {
+      type = "text";
+      setClickedText(e.target.innerHTML);
+    }
     if (e.target instanceof HTMLImageElement) {
       type = "image";
       setClickedImageUrl(e.target.src);
@@ -67,6 +74,34 @@ const ChatContainer = () => {
       y: e.clientY - top,
       type,
     });
+  };
+
+  const handleDownloadImage = async () => {
+    try {
+      if (!clickImageUrl) return;
+      const res = await fetch(clickImageUrl);
+      const blob = await res.blob();
+
+      const blobUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = Math.floor(Math.random() * 100000000) + ".jpg"; // Default filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl); // Clean up memory
+    } catch (error) {
+      console.log("failed to download image", error);
+    }
+  };
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(clickedText);
+    } catch (error) {
+      ErrorToast("failed to Copy text");
+    }
   };
 
   return (
@@ -90,6 +125,17 @@ const ChatContainer = () => {
               message={message}
             />
           ))
+        )}
+
+        {contextMenu && (
+          <ContextMenu
+            handleDownloadImage={handleDownloadImage}
+            onCopy={onCopy}
+            x={contextMenu.x}
+            y={contextMenu.y}
+            type={contextMenu.type}
+            onClose={() => setContextMenu(null)}
+          />
         )}
       </div>
 
