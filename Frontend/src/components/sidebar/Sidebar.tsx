@@ -40,19 +40,6 @@ const Sidebar = () => {
           <Users className="w-6 h-6" />
           <span className="font-medium">All Users</span>
         </div>
-
-        {/* <div className="mt-4 flex gap-3 w-full justify-between items-center">
-          <label className="hidden lg:block text-sm font-medium text-gray-600">
-            Only show online users
-          </label>
-          <input
-            type="checkbox"
-            checked={isShowOnlyOnline}
-            onChange={() => setIsShowOnlyOnline(!isShowOnlyOnline)}
-            className="toggle"
-          />
-        </div> 
-        */}
       </div>
 
       {/* all users listed here */}

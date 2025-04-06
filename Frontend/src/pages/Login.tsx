@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Eye, EyeClosed, LoaderCircle, Lock, Mail, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import Loader from "@/components/ui/Loader";
 import MessageIcon from "@/components/icons/Message";
+import { ErrorToast, SuccessToast } from "@/components/shared/Toast";
 
 export interface LoginFormData {
   username: string;
@@ -15,18 +15,10 @@ export interface LoginFormData {
 }
 
 const Login = () => {
-  const { authUser, login, checkAuth, isCheckingAuth } = useAuthStore();
+  const { login, isCheckingAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { state } = useLocation();
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  if (authUser) {
-    return <Navigate to="/" replace />;
-  }
 
   const {
     register,
@@ -37,13 +29,13 @@ const Login = () => {
   const { isPending, mutate } = useMutation({
     mutationFn: login,
     onSuccess: () => {
-      toast.success("User Logged In");
+      SuccessToast("User Logged In");
       navigate(state?.redirectUrl ?? "/", {
         replace: true,
       });
     },
     onError: (error) => {
-      toast.error(`${error.message ?? "Failed to login"}`);
+      ErrorToast(`${error.message ?? "Failed to login"}`);
     },
   });
 
@@ -176,18 +168,25 @@ const Login = () => {
 
           <div className="text-center">
             <span>Don't have an account? </span>
-            <Link to="/register" className="btn btn-link text-amber-50">
+            <Link to="/register" className="btn btn-link text-accent">
               Register
             </Link>
           </div>
         </div>
       </div>
-      <div className="w-full h-full hidden lg:block">
+      <div className="relative w-full h-full hidden lg:block">
         <img
-          src="/assets/images/authImage.svg"
+          src="/assets/images/background.jpg"
           alt="authImage"
           className="w-full h-full object-cover"
         />
+        <div className="space-y-3 w-full flex justify-center flex-col flex-wrap items-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-1/2">
+          <h1 className="text-6xl text-accent font-bold">LumeChat</h1>
+          <p>
+            Lumechat the Powerful Realtime Chat app. Have modern features with
+            asesome UI.
+          </p>
+        </div>
       </div>
     </div>
   );

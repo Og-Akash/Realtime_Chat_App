@@ -18,6 +18,7 @@ const getUsers = asyncHandler(async (req, res) => {
     .find({
       _id: { $ne: req.userId },
     })
+    .sort({ lastSeen: -1 })
     .select("-password");
   if (allUsers.length > 0) {
     return res.status(200).json(allUsers);
@@ -80,18 +81,17 @@ const sendMessageToUser = asyncHandler(async (req, res) => {
     image: imageUrl,
   });
 
-  await newMessage.save()
+  await newMessage.save();
 
   appAssert(newMessage, INTERNAL_SERVER_ERROR, "failed to store message");
 
   //! realtime message sending using socket io
 
-  const receiverSocketId = getSocketId(receiverId)
-  console.log("receiverSocketId :",receiverSocketId);
-  
+  const receiverSocketId = getSocketId(receiverId);
+  console.log("receiverSocketId :", receiverSocketId);
 
-  if(receiverSocketId) {
-    io.to(receiverSocketId).emit("newMessage",newMessage)
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("newMessage", newMessage);
   }
 
   //* return the response

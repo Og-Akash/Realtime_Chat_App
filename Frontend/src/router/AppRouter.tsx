@@ -1,56 +1,85 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import Home from "@/pages/Home";
-import Register from "@/pages/Register";
-import Login from "@/pages/Login";
-import Setting from "@/pages/Setting";
-import Profile from "@/pages/Profile";
+import { JSX, lazy, Suspense, useEffect } from "react";
+
+const Home = lazy(() => import("@/pages/Home"));
+const Register = lazy(() => import("@/pages/Register"));
+const Login = lazy(() => import("@/pages/Login"));
+const Setting = lazy(() => import("@/pages/Setting"));
+const Profile = lazy(() => import("@/pages/Profile"));
+const ChangePassword = lazy(() => import("@/pages/ChangePassword"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
 import { useAuthStore } from "@/store/useAuthStore";
-import NotFound from "@/pages/NotFound";
 import Layout from "@/components/Layout";
-import ChangePassword from "@/pages/ChangePassword";
-
-// const ProtectedRoute = ({
-//   children,
-//   redirectPath = "/",
-// }: {
-//   children: React.ReactNode;
-//   redirectPath?: string;
-// }) => {
-//   const { authUser, isCheckingAuth } = useAuthStore();
-
-//   if (isCheckingAuth && !authUser) {
-//     return <Loader />;
-//   }
-//   if (authUser) {
-//     return <Navigate to={redirectPath} replace />;
-//   }
-//   return children;
-// };
+import Loader from "@/components/ui/Loader";
 
 export const Approuter = () => {
-  const { authUser } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const ProtectedLayoutRoute = ({ children }: { children: JSX.Element }) => {
+    if (isCheckingAuth) return <Loader />;
+    return authUser ? children : <Navigate to="/login" replace />;
+  };
+
+  const PublicOnlyRoute = ({ element }: { element: JSX.Element }) => {
+    return !authUser ? element : <Navigate to="/" replace />;
+  };
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={authUser ? <Layout /> : <Navigate to="/login" />}
-      >
-        <Route index element={<Home />} />
-        <Route path="/setting" element={<Setting />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-      </Route>
-      <Route
-        path="/register"
-        element={!authUser ? <Register /> : <Navigate to="/" replace />}
-      />
-      <Route
-        path="/login"
-        element={!authUser ? <Login /> : <Navigate to="/" replace />}
-      />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <Suspense fallback={<Loader />}>
+      <Routes>
+        {/* Publicly accessible homepage */}
+        <Route path="/" element={<Layout />}>
+          <Route
+            index
+            element={
+              <ProtectedLayoutRoute>
+                <Home />
+              </ProtectedLayoutRoute>
+            }
+          />
+          <Route
+            path="/setting"
+            element={
+              <ProtectedLayoutRoute>
+                <Setting />
+              </ProtectedLayoutRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedLayoutRoute>
+                <Profile />
+              </ProtectedLayoutRoute>
+            }
+          />
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedLayoutRoute>
+                <ChangePassword />
+              </ProtectedLayoutRoute>
+            }
+          />
+        </Route>
+        {/* Public-only pages */}
+        <Route
+          path="/login"
+          element={<PublicOnlyRoute element={<Login />} />}
+        />
+        <Route
+          path="/register"
+          element={<PublicOnlyRoute element={<Register />} />}
+        />
+
+        {/* 404 fallback */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   );
 };

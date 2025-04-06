@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use(helmet());
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: [CLIENT_URL],
     credentials: true,
   })
 );

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { User } from "../../../types/userType";
 
 const SearchContacts = () => {
-  const { getUserByQuery } = useChatStore();
+  const { getUserByQuery,setSelectedUser } = useChatStore();
   const [searchQuery, setSearchQuery] = useState("");
   const {
     mutate,
@@ -62,6 +62,7 @@ const SearchContacts = () => {
                 className={`
             cursor-pointer w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors rounded-md
             `}
+            onClick={() => setSelectedUser(user)}
               >
                 <div className="relative flex items-center lg:gap-3">
                   <img

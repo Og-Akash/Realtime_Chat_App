@@ -8,7 +8,7 @@ const ChatHeader = () => {
   return (
     <div className="flex justify-between items-center bg-accent-content rounded-md">
       <div className="relative flex items-center gap-3 border-b p-2 border-base-300">
-        <button onClick={() => clearSelectedUser()} className="cursor-pointer  text-primary">
+        <button onClick={() => clearSelectedUser()} className="cursor-pointer text-accent">
           <ArrowLeft size={24} />
         </button>
         <img
@@ -30,10 +30,10 @@ const ChatHeader = () => {
       {/* Calling */}
 
       <div className="flex items-center gap-6 mr-4">
-        <button className="cursor-pointer hover:text-accent transition-colors duration-200 text-primary">
+        <button className="cursor-pointer hover:text-accent/70 transition-colors duration-200 text-accent">
           <Phone size={24} />
         </button>
-        <button className="cursor-pointer hover:text-accent transition-colors duration-200 text-primary">
+        <button className="cursor-pointer hover:text-accent/70 transition-colors duration-200 text-accent">
           <Video size={24} />
         </button>
       </div>

@@ -1,17 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
-import {
-  Eye,
-  EyeClosed,
-  LoaderCircle,
-  Lock,
-  Mail,
-  User,
-} from "lucide-react";
+import { Eye, EyeClosed, LoaderCircle, Lock, Mail, User } from "lucide-react";
 import Loader from "@/components/ui/Loader";
 import MessageIcon from "@/components/icons/Message";
 
@@ -22,15 +15,10 @@ export interface RegisterFormData {
 }
 
 const Register = () => {
-  const { authUser, signUp, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, signUp, isCheckingAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const {
     register,
     handleSubmit,
@@ -100,12 +88,13 @@ const Register = () => {
     return <Loader />;
   }
 
-  const handleGoogleRegister= () => {
+  const handleGoogleRegister = () => {
     try {
-      window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/v1/google`;
-
+      window.location.href = `${
+        import.meta.env.VITE_BACKEND_URL
+      }/auth/v1/google`;
     } catch (error) {
-      console.log('Error in google authentication', error)
+      console.log("Error in google authentication", error);
     }
   };
 
@@ -114,7 +103,7 @@ const Register = () => {
       <div className="w-full p-6 sm:p-12 flex justify-center items-center bg-base-300">
         <div className="max-w-xl flex flex-col space-y-4 items-center">
           <span className="size-16 flex items-center justify-center rounded-xl">
-          <MessageIcon />
+            <MessageIcon />
           </span>
           <div className="text-center flex flex-col items-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-accent">
@@ -128,7 +117,10 @@ const Register = () => {
 
           {/* Social logins */}
           <div className="w-full grid grid-cols-1 gap-4 max-w-sm">
-          <button onClick={handleGoogleRegister} className="cursor-pointer border border-accent/40 p-2 rounded-md flex items-center justify-center gap-4 h-12">
+            <button
+              onClick={handleGoogleRegister}
+              className="cursor-pointer border border-accent/40 p-2 rounded-md flex items-center justify-center gap-4 h-12"
+            >
               <img
                 src="./assets/images/google.png"
                 alt="Google Icon"
@@ -215,18 +207,22 @@ const Register = () => {
 
           <div className="text-center">
             <span>Already have an account? </span>
-            <Link to="/login" className="btn btn-link text-amber-50">
+            <Link to="/login" className="btn btn-link text-accent">
               Login
             </Link>
           </div>
         </div>
       </div>
-      <div className="w-full h-full hidden lg:block">
+      <div className="relative w-full h-full hidden lg:block">
         <img
-          src="/assets/images/authImage.svg"
+          src="/assets/images/background.jpg"
           alt="authImage"
           className="w-full h-full object-cover"
         />
+        <div className="space-y-3 w-full flex justify-center flex-col  items-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-1/2">
+          <h1 className="text-6xl text-accent font-bold">LumeChat</h1>
+          <p>Lumechat the Powerful Realtime Chat app. Have modern features with asesome UI.</p>
+        </div>
       </div>
     </div>
   );
