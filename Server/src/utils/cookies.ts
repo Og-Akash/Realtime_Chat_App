@@ -10,9 +10,9 @@ interface CookieParams {
 }
 
 const defaultOptions: CookieOptions = {
-  sameSite: NODE_ENV === "developmen" ? "strict" : "none",
   httpOnly: true,
-  secure: NODE_ENV === "production",
+  secure: process.env.NODE_ENV === "production" ? true : false,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
 };
 
 export const getAccessTokenOption = (): CookieOptions => ({
